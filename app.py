@@ -1,10 +1,15 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, session, redirect
+from functools import wraps
+import pymongo
 
 app = Flask(__name__)
+from user import routes
+
 
 @app.route('/')
-def index():
-    return render_template('index.html')
+def home():
+    return render_template('home.html')
 
-if __name__ == "__main__":
-    app.run(debug=True)
+@app.route('/dashboard/')
+def dashboard():
+    return render_template('dashboard.html')
