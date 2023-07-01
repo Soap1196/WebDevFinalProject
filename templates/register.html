@@ -7,7 +7,7 @@
 {% block content %}
     <div class="card">
 
-      <h1 class="center">Login!</h1>
+      <h1 class="center">Create an Account</h1>
 
       <form class = "field" method="POST" action= "" name="signup_form">
 
@@ -16,9 +16,9 @@
         {{ form.password() }}
         {{ form.submit() }}
 
-       
+      
       </form>
-      <a href= "{{url_for('register')}}">Don't Have an account, Sign up      
+      <a href= "{{url_for('home')}}">Already have an account? Login!     
     </div>
   
   </div>
