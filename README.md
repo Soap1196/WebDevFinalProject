@@ -10,3 +10,5 @@ https://wtforms.readthedocs.io/en/2.3.x/fields/
 
 
 https://www.youtube.com/watch?v=71EU8gnZqZQ
+
+To install dependencies/imports run "pip install -r requirements.txt" in the directory that has the requirements file. 
