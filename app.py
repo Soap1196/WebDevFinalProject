@@ -9,10 +9,14 @@ from user import routes
 app = Flask(__name__)
 app.secret_key = "testing"
 
+
+
+
 myclient = pymongo.MongoClient("mongodb://localhost:27017/")
 mydb = myclient["CustomerDB"]
 mycol = mydb["CustomerCollection"]
-records = myclient
+
+records = mycol
 
 
 
@@ -56,13 +60,13 @@ def login():
         email = request.form.get("email")
         password = request.form.get("password")
 
-       
+        #check if email exists in database
         email_found = records.find_one({"email": email})
         if email_found:
             email_val = email_found['email']
-            passwordcheck = email_found['password']
-            
-            if password == passwordcheck:
+            passwordcheck = email_found['password1']
+            #encode the password and check if it matches
+            if (password == passwordcheck):
                 session["email"] = email_val
                 return redirect(url_for('logged_in'))
             else:
@@ -75,6 +79,6 @@ def login():
             return render_template('login.html', message=message)
     return render_template('login.html', message=message)
 
-#end of code to run it
+
 if __name__ == "__main__":
   app.run(debug=True)
