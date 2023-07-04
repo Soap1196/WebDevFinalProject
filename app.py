@@ -40,7 +40,7 @@ def index():
 def logged_in():
     if "email" in session:
         email = session["email"]
-        return render_template('logged_in.html', email=email)
+        return render_template('logged_in.html', email=email, db = data)
     else:
         return redirect(url_for("login"))
     
