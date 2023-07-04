@@ -6,4 +6,6 @@
 https://github.com/LukePeters/user-login-system-assets 
 with video https://www.youtube.com/watch?v=w1STSSumoVk&list=LL&index=2
 
+login and CSS reference: https://medium.com/codex/simple-registration-login-system-with-flask-mongodb-and-bootstrap-8872b16ef915
+
 
