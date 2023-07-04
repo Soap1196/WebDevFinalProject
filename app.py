@@ -19,11 +19,6 @@ mycol = mydb["CustomerCollection"]
 
 records = mycol
 
-myfood = mydb["MenuCollection"]
-
-foodstores = myfood
-
-
 
 @app.route("/", methods=['post', 'get'])
 def index():
@@ -39,8 +34,6 @@ def index():
         user_data = records.find_one({"email": email})
         new_email = user_data['email']
         return render_template('logged_in.html', email=new_email)
-    if request.method == "GetMenu":
-        menu = 
     return render_template('index.html')
 
 @app.route('/logged_in')
@@ -59,13 +52,10 @@ def login():
     if request.method == "POST":
         email = request.form.get("email")
         password = request.form.get("password")
-
-        #check if email exists in database
         email_found = records.find_one({"email": email})
         if email_found:
             email_val = email_found['email']
             passwordcheck = email_found['password1']
-            #encode the password and check if it matches
             if (password == passwordcheck):
                 session["email"] = email_val
                 return redirect(url_for('logged_in'))
@@ -83,7 +73,16 @@ def login():
 
 @app.route("/Managment")
 def managementLogin():
-    return render_template('management.html')
+    myclient = pymongo.MongoClient("mongodb://localhost:27017/")
+    mydb = myclient["CustomerDB"]
+    myfood = mydb["MenuCollection"]
+
+    fullmenu = ""
+
+    for x in myfood.find():
+        fullmenu = fullmenu + str(x) + "\n"
+
+    return render_template('management.html', fullmenu = fullmenu)
 
 
 if __name__ == "__main__":
