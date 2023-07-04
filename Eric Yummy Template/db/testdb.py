@@ -6,7 +6,7 @@ import numpy as np
 
 # df=pd.DataFrame(menuitems)
 
-testdb = Flask(__name__, template_folder='Eric Yummy Template')
+testdb = Flask(__name__)
 @testdb.route('/')
 def index():
     return render_template("menu.html")
