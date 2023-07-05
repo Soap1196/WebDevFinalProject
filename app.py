@@ -85,6 +85,9 @@ def managementLogin():
         if UpdateAmount != "":
             myfood.update_one({ "food": UpdateFoodname }, { "$set": { "supply": UpdateAmount } })
         
+        if UpdatePrice != "":
+            myfood.update_one({ "food": UpdateFoodname }, { "$set": { "price": UpdatePrice } })
+        
         print(UpdateAmount)
         print(UpdateFoodname)
         # fresh connection to database
