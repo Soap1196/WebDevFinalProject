@@ -85,11 +85,15 @@ def managementLogin():
     return render_template('management.html', fullmenu = fullmenu)
 
 @app.route("/menu")
-def menu():
+def foodmenu():
     myclient = pymongo.MongoClient("mongodb://localhost:27017/")
     mydb = myclient["CustomerDB"]
     myfood = mydb["MenuCollection"]
-    return render_template("menu.html", list[myfood])
+    fullmenu = []
+
+    for x in myfood.find():
+        fullmenu = fullmenu + str(x) + "\n"
+    return render_template('menu.html', foodlist = fullmenu )
 
 
 
