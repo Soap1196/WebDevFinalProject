@@ -10,7 +10,7 @@ app = Flask(__name__)
 app.secret_key = "testing"
 
 
-ManagmentUserName = "M"
+ManagementUserName = "M"
 ManagementPassword = "P"
 
 myclient = pymongo.MongoClient("mongodb://localhost:27017/")
@@ -40,7 +40,7 @@ def index():
 def logged_in():
     if "email" in session:
         email = session["email"]
-        return render_template('logged_in.html', email=email, db = data)
+        return render_template('logged_in.html', email=email, db = records)
     else:
         return redirect(url_for("login"))
     
@@ -64,14 +64,14 @@ def login():
                     return redirect(url_for("logged_in"))
                 message = 'Wrong password'
                 return render_template('login.html', message=message)
-        if (password == ManagementPassword) and (email == ManagmentUserName):
+        if (password == ManagementPassword) and (email == ManagementUserName):
             return redirect(url_for('managementLogin'))
         else:
             message = 'Email not found'
             return render_template('login.html', message=message)
     return render_template('login.html', message=message)
 
-@app.route("/Managment")
+@app.route("/management")
 def managementLogin():
     myclient = pymongo.MongoClient("mongodb://localhost:27017/")
     mydb = myclient["CustomerDB"]
@@ -83,6 +83,14 @@ def managementLogin():
         fullmenu = fullmenu + str(x) + "\n"
 
     return render_template('management.html', fullmenu = fullmenu)
+
+@app.route("/menu")
+def menu():
+    myclient = pymongo.MongoClient("mongodb://localhost:27017/")
+    mydb = myclient["CustomerDB"]
+    myfood = mydb["MenuCollection"]
+    return render_template("menu.html", list[myfood])
+
 
 
 if __name__ == "__main__":
