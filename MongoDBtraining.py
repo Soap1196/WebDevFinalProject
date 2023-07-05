@@ -26,6 +26,3 @@ post = {"_id": 7, "food": "coke", "type": "drink", "price": 3.00, "supply": 15}
 mycol.insert_one(post)
 post = {"_id": 8, "food": "water", "type": "drink", "price": 3.00, "supply": 15}
 mycol.insert_one(post)
-
-def menu():
-    return render_template("menu.html", headings=mycol, data=mycol)

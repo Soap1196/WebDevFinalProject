@@ -40,7 +40,7 @@ def index():
 def logged_in():
     if "email" in session:
         email = session["email"]
-        return render_template('logged_in.html', email=email, db = data)
+        return render_template('logged_in.html', email=email, db = mycol)
     else:
         return redirect(url_for("login"))
     
@@ -77,14 +77,25 @@ def managementLogin():
     mydb = myclient["CustomerDB"]
     myfood = mydb["MenuCollection"]
 
-    fullmenu = ""
+    fullmenu = []
 
     for x in myfood.find():
-        fullmenu = fullmenu + str(x) + "\n"
+        fullmenu.append(str(x))
 
     return render_template('management.html', fullmenu = fullmenu)
 
 
+@app.route("/menu")
+def menuLaunch():
+    myclient = pymongo.MongoClient("mongodb://localhost:27017/")
+    mydb = myclient["CustomerDB"]
+    myfood = mydb["MenuCollection"]
+
+    fullmenu = []
+
+    for x in myfood.find():
+        fullmenu.append(x)
+    return render_template('menu.html', list=fullmenu)
 
 if __name__ == "__main__":
   app.run(debug=True)
