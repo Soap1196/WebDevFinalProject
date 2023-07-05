@@ -82,13 +82,18 @@ def managementLogin():
         UpdateFoodname = request.form.get("UpdateFoodName")
         UpdatePrice = request.form.get("UpdatePrice")
         UpdateAmount = request.form.get("UpdateAmount")
+
+        if myfood.find_one({ "food" : UpdateFoodname}) == None:
+            myfood.insert_one({ "food": UpdateFoodname, "supply": UpdateAmount, "price": UpdatePrice})
+    
         if UpdateAmount != "":
             myfood.update_one({ "food": UpdateFoodname }, { "$set": { "supply": UpdateAmount } })
         
         if UpdatePrice != "":
-            myfood.update_one({ "food": UpdateFoodname }, { "$set": { "price": UpdatePrice } })
+            myfood.update_one({ "food": UpdateFoodname }, { "$set": { "price": UpdatePrice } })    
         
         print(UpdateAmount)
+        print(UpdatePrice)
         print(UpdateFoodname)
         # fresh connection to database
         myclient = pymongo.MongoClient("mongodb://localhost:27017/")
