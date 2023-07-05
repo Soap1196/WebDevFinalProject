@@ -7,6 +7,7 @@ mydb = myclient["CustomerDB"]
 cuscol = mydb["CustomerCollection"]
 mycol = mydb["MenuCollection"]
 
+
 post = {"_id": 0, "food": "cheese pizza", "type": "pizza", "price": 20.00, "supply": 15}
 mycol.insert_one(post)
 post = {"_id": 1, "food": "pepperoni pizza", "type": "pizza", "price": 20.00, "supply": 15}
@@ -25,3 +26,6 @@ post = {"_id": 7, "food": "coke", "type": "drink", "price": 3.00, "supply": 15}
 mycol.insert_one(post)
 post = {"_id": 8, "food": "water", "type": "drink", "price": 3.00, "supply": 15}
 mycol.insert_one(post)
+
+def menu():
+    return render_template("menu.html", headings=mycol, data=mycol)

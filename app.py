@@ -85,5 +85,6 @@ def managementLogin():
     return render_template('management.html', fullmenu = fullmenu)
 
 
+
 if __name__ == "__main__":
   app.run(debug=True)
