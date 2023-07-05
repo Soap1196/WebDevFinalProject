@@ -1,6 +1,7 @@
 from flask import Flask, render_template, session, request, url_for, redirect, session
 from functools import wraps
 import pymongo
+import pandas as pd
 
 app = Flask(__name__)
 from user import routes
@@ -40,14 +41,14 @@ def index():
 def logged_in():
     if "email" in session:
         email = session["email"]
-        return render_template('logged_in.html', email=email, db = data)
+        return render_template('logged_in.html', email=email,)
     else:
         return redirect(url_for("login"))
     
 
 @app.route("/login", methods=["POST", "GET"])
 def login():
-    message = 'Please login to your account'
+    message = ''
 
     if request.method == "POST":
         email = request.form.get("email")
@@ -71,18 +72,37 @@ def login():
             return render_template('login.html', message=message)
     return render_template('login.html', message=message)
 
-@app.route("/Managment")
+@app.route("/Managment", methods=("POST", "GET"))
 def managementLogin():
+
+    if request.method == "POST":
+        myclient = pymongo.MongoClient("mongodb://localhost:27017/")
+        mydb = myclient["CustomerDB"]
+        myfood = mydb["MenuCollection"]
+        UpdateFoodname = request.form.get("UpdateFoodName")
+        UpdatePrice = request.form.get("UpdatePrice")
+        UpdateAmount = request.form.get("UpdateAmount")
+        if UpdateAmount != "":
+            myfood.update_one({ "food": UpdateFoodname }, { "$set": { "supply": UpdateAmount } })
+        
+        print(UpdateAmount)
+        print(UpdateFoodname)
+        # fresh connection to database
+        myclient = pymongo.MongoClient("mongodb://localhost:27017/")
+        mydb = myclient["CustomerDB"]
+        myfood = mydb["MenuCollection"]
+
+        fullmenu = myfood.find()
+        df =  pd.DataFrame(list(fullmenu))
+        return render_template('management.html',  tables=[df.to_html(classes='data')], titles=df.columns.values)
+
     myclient = pymongo.MongoClient("mongodb://localhost:27017/")
     mydb = myclient["CustomerDB"]
     myfood = mydb["MenuCollection"]
 
-    fullmenu = ""
-
-    for x in myfood.find():
-        fullmenu = fullmenu + str(x) + "\n"
-
-    return render_template('management.html', fullmenu = fullmenu)
+    fullmenu = myfood.find()
+    df =  pd.DataFrame(list(fullmenu))
+    return render_template('management.html',  tables=[df.to_html(classes='data')], titles=df.columns.values)
 
 
 if __name__ == "__main__":

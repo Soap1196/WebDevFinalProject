@@ -4,7 +4,25 @@
 {% block content %}
 <div>
 <p>This is the management page</p>
+<body>
 
-{{ fullmenu }}
+    {% for table in tables %}
+                {{titles[loop.index]}}
+                {{ table|safe }}
+    {% endfor %}
+    </body>
+
+
+    <form action="" method="post">
+        <div class="form-group">
+            <label for="Food Data">Update Stock</label>
+            <input name="UpdateFoodName" class="form-control" id="InputFood"  placeholder="">
+            <label for="">Update Price</label>
+            <input type="price" name="UpdatePrice" class="form-control" id="InputPrice" placeholder="">
+            <label for="">Update Supply</label>
+            <input type="amount" name="UpdateAmount" class="form-control" id="InputAmount" placeholder="">
+        <button type="submit" class="btn btn-primary">Update</button>
+        </div>
+      </form>
 </div>
 {% endblock %}
