@@ -66,81 +66,10 @@
           <div class="row gy-5">
 
             <div class="col-lg-4 menu-item">
-              <a href="assets/img/menu/menu-item-1.png" class="glightbox"><img src="assets/img/menu/menu-item-1.png" class="menu-img img-fluid" alt=""></a>
-              <h4>Magnam Tiste</h4>
-              <p class="ingredients">
-                Lorem, deren, trataro, filede, nerada
-              </p>
-              <p class="price">
-                $5.95
-              </p>
-            </div>
-            <-- Menu Item -->
 
-            <!-- <div class="col-lg-4 menu-item">
-              <a href="assets/img/menu/menu-item-2.png" class="glightbox"><img src="assets/img/menu/menu-item-2.png" class="menu-img img-fluid" alt=""></a>
-              <h4>Aut Luia</h4>
-              <p class="ingredients">
-                Lorem, deren, trataro, filede, nerada
-              </p>
-              <p class="price">
-                $14.95
-              </p>
-            </div> -->
-            <!-- Menu Item -->
+        End Starter Menu Content -->
 
-            <!-- <div class="col-lg-4 menu-item">
-              <a href="assets/img/menu/menu-item-3.png" class="glightbox"><img src="assets/img/menu/menu-item-3.png" class="menu-img img-fluid" alt=""></a>
-              <h4>Est Eligendi</h4>
-              <p class="ingredients">
-                Lorem, deren, trataro, filede, nerada
-              </p>
-              <p class="price">
-                $8.95
-              </p>
-            </div> -->
-            <!-- Menu Item -->
-
-            <!-- <div class="col-lg-4 menu-item">
-              <a href="assets/img/menu/menu-item-4.png" class="glightbox"><img src="assets/img/menu/menu-item-4.png" class="menu-img img-fluid" alt=""></a>
-              <h4>Eos Luibusdam</h4>
-              <p class="ingredients">
-                Lorem, deren, trataro, filede, nerada
-              </p>
-              <p class="price">
-                $12.95
-              </p>
-            </div> -->
-            <!-- Menu Item -->
-
-            <!-- <div class="col-lg-4 menu-item">
-              <a href="assets/img/menu/menu-item-5.png" class="glightbox"><img src="assets/img/menu/menu-item-5.png" class="menu-img img-fluid" alt=""></a>
-              <h4>Eos Luibusdam</h4>
-              <p class="ingredients">
-                Lorem, deren, trataro, filede, nerada
-              </p>
-              <p class="price">
-                $12.95
-              </p>
-            </div> -->
-            <!-- Menu Item -->
-
-            <!-- <div class="col-lg-4 menu-item">
-              <a href="assets/img/menu/menu-item-6.png" class="glightbox"><img src="assets/img/menu/menu-item-6.png" class="menu-img img-fluid" alt=""></a>
-              <h4>Laboriosam Direva</h4>
-              <p class="ingredients">
-                Lorem, deren, trataro, filede, nerada
-              </p>
-              <p class="price">
-                $9.95
-              </p>
-            </div> -->
-            <!-- Menu Item -->
-
-          <!-- </div>
-        </div> --> 
-        <!-- End Starter Menu Content -->
-
+        <!-- BEGIN PIZZAS SECTION -->
         <div class="tab-pane fade" id="menu-breakfast">
 
           <div class="tab-header text-center">
@@ -150,24 +79,22 @@
 
           <div class="row gy-5">
             <!-- For loop through 'food' type matching current menu -->
-            {% for n in foodlist%}
-            {% if n.type == 'pizza'%}
+            {% for n in fullmenu %}
+            <!-- Change quoted part here to adjust search criteria -->
+            {% if n['type'] == 'pizza' %}
             <div class="col-lg-4 menu-item">
-
-              <h4>{{ n[food] }}</h4>
-              <p>{{ n[price] }}</p>
-              <p>{{ n[stock] }}</p>
-              
-              <p>
-                <!-- For loop that will print stock -->
-                <!-- {% for cell in mycol%}
-                {% endfor %} -->
-              </p>
+              <h4>{{ n['food'] }}</h4>
+              <!-- round(2) rounds decimal -->
+              <p class="price">$ {{ n['price']|string }}</p>
+              <p class="ingredients">Supply {{ n['supply'] }}</p>
             </div>
               {% else %}
             {% endif %}
             {% endfor %}
 
+
+            <!-- saved format incase we need references to things that are in static
+            will delete later -->
             <!-- <div class="col-lg-4 menu-item">
               <a href="assets/img/menu/menu-item-1.png" class="glightbox"><img src="assets/img/menu/menu-item-1.png" class="menu-img img-fluid" alt=""></a>
               <h4>Magnam Tiste</h4>
@@ -180,69 +107,11 @@
             </div> -->
             <!-- Menu Item -->
 
-            <!-- <div class="col-lg-4 menu-item">
-              <a href="assets/img/menu/menu-item-2.png" class="glightbox"><img src="assets/img/menu/menu-item-2.png" class="menu-img img-fluid" alt=""></a>
-              <h4>Aut Luia</h4>
-              <p class="ingredients">
-                Lorem, deren, trataro, filede, nerada
-              </p>
-              <p class="price">
-                $14.95
-              </p>
-            </div> -->
-            <!-- Menu Item -->
-
-            <!-- <div class="col-lg-4 menu-item">
-              <a href="assets/img/menu/menu-item-3.png" class="glightbox"><img src="assets/img/menu/menu-item-3.png" class="menu-img img-fluid" alt=""></a>
-              <h4>Est Eligendi</h4>
-              <p class="ingredients">
-                Lorem, deren, trataro, filede, nerada
-              </p>
-              <p class="price">
-                $8.95
-              </p>
-            </div> -->
-            <!-- Menu Item -->
-
-            <!-- <div class="col-lg-4 menu-item">
-              <a href="assets/img/menu/menu-item-4.png" class="glightbox"><img src="assets/img/menu/menu-item-4.png" class="menu-img img-fluid" alt=""></a>
-              <h4>Eos Luibusdam</h4>
-              <p class="ingredients">
-                Lorem, deren, trataro, filede, nerada
-              </p>
-              <p class="price">
-                $12.95
-              </p>
-            </div> -->
-            <!-- Menu Item -->
-
-            <!-- <div class="col-lg-4 menu-item">
-              <a href="assets/img/menu/menu-item-5.png" class="glightbox"><img src="assets/img/menu/menu-item-5.png" class="menu-img img-fluid" alt=""></a>
-              <h4>Eos Luibusdam</h4>
-              <p class="ingredients">
-                Lorem, deren, trataro, filede, nerada
-              </p>
-              <p class="price">
-                $12.95
-              </p>
-            </div> -->
-            <!-- Menu Item -->
-
-            <!-- <div class="col-lg-4 menu-item">
-              <a href="assets/img/menu/menu-item-6.png" class="glightbox"><img src="assets/img/menu/menu-item-6.png" class="menu-img img-fluid" alt=""></a>
-              <h4>Laboriosam Direva</h4>
-              <p class="ingredients">
-                Lorem, deren, trataro, filede, nerada
-              </p>
-              <p class="price">
-                $9.95
-              </p>
-            </div> -->
-            <!-- Menu Item -->
-
           </div>
-        </div><!-- End Pizzas Menu Content -->
+        </div>
+        <!-- End Pizzas Menu Content -->
 
+        <!-- BEGIN PASTAS SECTION -->
         <div class="tab-pane fade" id="menu-lunch">
 
           <div class="tab-header text-center">
@@ -250,77 +119,25 @@
             <h3>Pastas</h3>
           </div>
 
-          <div class="row gy-5">
-
-            <div class="col-lg-4 menu-item">
-              <a href="assets/img/menu/menu-item-1.png" class="glightbox"><img src="assets/img/menu/menu-item-1.png" class="menu-img img-fluid" alt=""></a>
-              <h4>Magnam Tiste</h4>
-              <p class="ingredients">
-                Lorem, deren, trataro, filede, nerada
-              </p>
-              <p class="price">
-                $5.95
-              </p>
-            </div><!-- Menu Item -->
-
-            <div class="col-lg-4 menu-item">
-              <a href="assets/img/menu/menu-item-2.png" class="glightbox"><img src="assets/img/menu/menu-item-2.png" class="menu-img img-fluid" alt=""></a>
-              <h4>Aut Luia</h4>
-              <p class="ingredients">
-                Lorem, deren, trataro, filede, nerada
-              </p>
-              <p class="price">
-                $14.95
-              </p>
-            </div><!-- Menu Item -->
-
-            <div class="col-lg-4 menu-item">
-              <a href="assets/img/menu/menu-item-3.png" class="glightbox"><img src="assets/img/menu/menu-item-3.png" class="menu-img img-fluid" alt=""></a>
-              <h4>Est Eligendi</h4>
-              <p class="ingredients">
-                Lorem, deren, trataro, filede, nerada
-              </p>
-              <p class="price">
-                $8.95
-              </p>
-            </div><!-- Menu Item -->
-
-            <div class="col-lg-4 menu-item">
-              <a href="assets/img/menu/menu-item-4.png" class="glightbox"><img src="assets/img/menu/menu-item-4.png" class="menu-img img-fluid" alt=""></a>
-              <h4>Eos Luibusdam</h4>
-              <p class="ingredients">
-                Lorem, deren, trataro, filede, nerada
-              </p>
-              <p class="price">
-                $12.95
-              </p>
-            </div><!-- Menu Item -->
-
-            <div class="col-lg-4 menu-item">
-              <a href="assets/img/menu/menu-item-5.png" class="glightbox"><img src="assets/img/menu/menu-item-5.png" class="menu-img img-fluid" alt=""></a>
-              <h4>Eos Luibusdam</h4>
-              <p class="ingredients">
-                Lorem, deren, trataro, filede, nerada
-              </p>
-              <p class="price">
-                $12.95
-              </p>
-            </div><!-- Menu Item -->
-
-            <div class="col-lg-4 menu-item">
-              <a href="assets/img/menu/menu-item-6.png" class="glightbox"><img src="assets/img/menu/menu-item-6.png" class="menu-img img-fluid" alt=""></a>
-              <h4>Laboriosam Direva</h4>
-              <p class="ingredients">
-                Lorem, deren, trataro, filede, nerada
-              </p>
-              <p class="price">
-                $9.95
-              </p>
-            </div><!-- Menu Item -->
+            <div class="row gy-5">
+              <!-- For loop through 'food' type matching current menu -->
+              {% for n in fullmenu %}
+              <!-- Change quoted part here to adjust search criteria -->
+              {% if n['type'] == 'pasta' %}
+              <div class="col-lg-4 menu-item">
+                <h4>{{ n['food'] }}</h4>
+                <p class="price">$ {{ n['price']|string }}</p>
+                <p class="ingredients">Supply {{ n['supply'] }}</p>
+              </div>
+                {% else %}
+              {% endif %}
+              {% endfor %}
+            <!-- Menu Item -->
 
           </div>
         </div><!-- End Pastas Menu Content -->
 
+        <!-- BEGIN DRINKS SECTION -->
         <div class="tab-pane fade" id="menu-dinner">
 
           <div class="tab-header text-center">
@@ -329,73 +146,18 @@
           </div>
 
           <div class="row gy-5">
-
+            <!-- For loop through 'food' type matching current menu -->
+            {% for n in fullmenu %}
+            <!-- Change quoted part here to adjust search criteria -->
+            {% if n['type'] == 'drink' %}
             <div class="col-lg-4 menu-item">
-              <a href="assets/img/menu/menu-item-1.png" class="glightbox"><img src="assets/img/menu/menu-item-1.png" class="menu-img img-fluid" alt=""></a>
-              <h4>Magnam Tiste</h4>
-              <p class="ingredients">
-                Lorem, deren, trataro, filede, nerada
-              </p>
-              <p class="price">
-                $5.95
-              </p>
-            </div><!-- Menu Item -->
-
-            <div class="col-lg-4 menu-item">
-              <a href="assets/img/menu/menu-item-2.png" class="glightbox"><img src="assets/img/menu/menu-item-2.png" class="menu-img img-fluid" alt=""></a>
-              <h4>Aut Luia</h4>
-              <p class="ingredients">
-                Lorem, deren, trataro, filede, nerada
-              </p>
-              <p class="price">
-                $14.95
-              </p>
-            </div><!-- Menu Item -->
-
-            <div class="col-lg-4 menu-item">
-              <a href="assets/img/menu/menu-item-3.png" class="glightbox"><img src="assets/img/menu/menu-item-3.png" class="menu-img img-fluid" alt=""></a>
-              <h4>Est Eligendi</h4>
-              <p class="ingredients">
-                Lorem, deren, trataro, filede, nerada
-              </p>
-              <p class="price">
-                $8.95
-              </p>
-            </div><!-- Menu Item -->
-
-            <div class="col-lg-4 menu-item">
-              <a href="assets/img/menu/menu-item-4.png" class="glightbox"><img src="assets/img/menu/menu-item-4.png" class="menu-img img-fluid" alt=""></a>
-              <h4>Eos Luibusdam</h4>
-              <p class="ingredients">
-                Lorem, deren, trataro, filede, nerada
-              </p>
-              <p class="price">
-                $12.95
-              </p>
-            </div><!-- Menu Item -->
-
-            <div class="col-lg-4 menu-item">
-              <a href="assets/img/menu/menu-item-5.png" class="glightbox"><img src="assets/img/menu/menu-item-5.png" class="menu-img img-fluid" alt=""></a>
-              <h4>Eos Luibusdam</h4>
-              <p class="ingredients">
-                Lorem, deren, trataro, filede, nerada
-              </p>
-              <p class="price">
-                $12.95
-              </p>
-            </div><!-- Menu Item -->
-
-            <div class="col-lg-4 menu-item">
-              <a href="assets/img/menu/menu-item-6.png" class="glightbox"><img src="assets/img/menu/menu-item-6.png" class="menu-img img-fluid" alt=""></a>
-              <h4>Laboriosam Direva</h4>
-              <p class="ingredients">
-                Lorem, deren, trataro, filede, nerada
-              </p>
-              <p class="price">
-                $9.95
-              </p>
-            </div><!-- Menu Item -->
-
+              <h4>{{ n['food'] }}</h4>
+              <p class="price">$ {{ n['price']|string }}</p>
+              <p class="ingredients">Supply {{ n['supply'] }}</p>
+            </div>
+              {% else %}
+            {% endif %}
+            {% endfor %}
           </div>
         </div><!-- End Drinks Menu Content -->
 

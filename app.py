@@ -92,8 +92,8 @@ def foodmenu():
     fullmenu = []
 
     for x in myfood.find():
-        fullmenu = fullmenu + str(x) + "\n"
-    return render_template('menu.html', foodlist = fullmenu )
+        fullmenu.append(x)
+    return render_template('menu.html', fullmenu = fullmenu )
 
 
 
