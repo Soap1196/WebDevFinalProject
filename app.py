@@ -66,7 +66,7 @@ def login():
             return render_template('login.html', message=message)
     return render_template('login.html', message=message)
 
-@app.route("/management", methods=("POST", "GET"))
+@app.route("/management", methods=["POST", "GET"])
 def managementLogin():
 
     if request.method == "POST":
@@ -79,13 +79,13 @@ def managementLogin():
 
         if myfood.find_one({ "food" : UpdateFoodname}) == None:
             myfood.insert_one({ "food": UpdateFoodname, "supply": UpdateAmount, "price": UpdatePrice})
-    
+
         if UpdateAmount != "":
             myfood.update_one({ "food": UpdateFoodname }, { "$set": { "supply": UpdateAmount } })
-        
+
         if UpdatePrice != "":
-            myfood.update_one({ "food": UpdateFoodname }, { "$set": { "price": UpdatePrice } })    
-        
+            myfood.update_one({ "food": UpdateFoodname }, { "$set": { "price": UpdatePrice } })
+
         print(UpdateAmount)
         print(UpdatePrice)
         print(UpdateFoodname)
@@ -106,16 +106,21 @@ def managementLogin():
     df =  pd.DataFrame(list(fullmenu))
     return render_template('management.html',  tables=[df.to_html(classes='data')], titles=df.columns.values)
 
-@app.route("/menu")
+@app.route("/menu", methods=["GET"])
 def foodmenu():
     myclient = pymongo.MongoClient("mongodb://localhost:27017/")
     mydb = myclient["CustomerDB"]
     myfood = mydb["MenuCollection"]
     fullmenu = []
-
     for x in myfood.find():
         fullmenu.append(x)
-    return render_template('menu.html', fullmenu = fullmenu )
+
+    email = ""
+    if "email" in session:
+        email = session["email"]
+
+    return render_template('menu.html', fullmenu=fullmenu, email=email)
+
 
 
 
