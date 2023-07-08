@@ -1,15 +1,11 @@
-from flask import Flask, render_template, session, request, url_for, redirect, session
-from functools import wraps
+from flask import Flask, render_template, session, request, url_for, redirect
 import pymongo
 import pandas as pd
 
 app = Flask(__name__)
-from user import routes
-
-
-app = Flask(__name__)
 app.secret_key = "testing"
 
+from user import routes
 
 ManagementUserName = "M"
 ManagementPassword = "P"
@@ -21,9 +17,8 @@ mycol = mydb["CustomerCollection"]
 records = mycol
 
 
-@app.route("/", methods=['post', 'get'])
+@app.route("/", methods=['POST', 'GET'])
 def index():
-    message = ''
     if "email" in session:
         return redirect(url_for("logged_in"))
     if request.method == "POST":
