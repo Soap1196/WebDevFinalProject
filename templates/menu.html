@@ -1,22 +1,8 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="utf-8">
-  <meta content="width=device-width, initial-scale=1.0" name="viewport">
-  <!-- Using url_for method -->
-  <!-- <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css')}}" >
-  <link rel="stylesheet" href="{{ url_for('static', filename='vendor/bootstrap/css/bootstrap.min.css')}}" >
-  <link rel="stylesheet" href="{{ url_for('static', filename='vendor/bootstrap-icons/bootstrap-icons.css')}}" >
-  <link rel="stylesheet" href="{{ url_for('static', filename='vendor/aos/aos.css')}}"> -->
+{% extends "base.html" %}
 
-  <link rel="stylesheet" href="../static/css/main.css" >
-  <link rel="stylesheet" href="../static/vendor/bootstrap/css/bootstrap.min.css" >
-  <link rel="stylesheet" href="../static/vendor/bootstrap-icons/bootstrap-icons.css" >
-  <link rel="stylesheet" href="../static/vendor/aos/aos.css">
-  {% block head %}{% endblock %}
-  <!-- <link href="assets/vendor/glightbox/css/glightbox.min.css" rel="stylesheet">
-  <link href="assets/vendor/swiper/swiper-bundle.min.css" rel="stylesheet"> -->
-</head>
+{% block title %}Menu{% endblock %}
+
+{% block content %}
 <body>
 <section id="menu" class="menu">
     <div class="container" data-aos="fade-up">
@@ -165,33 +151,7 @@
 
     </div>
   </section><!-- End Menu Section -->
-</body>
   <a href="#" class="scroll-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
-
   <div id="preloader"></div>
-
-  <!-- Vendor JS Files -->
-  <!-- Using url_for method -->
-<!--   
-  <script src="{{ url_for('static', filename='vendor/bootstrap/js/bootstrap.bundle.min.js')}}"></script>
-  <script src="{{ url_for('static', filename='vendor/aos/aos.js')}}"></script>
-  <script src="{{ url_for('static', filename='vendor/glightbox/js/glightbox.min.js')}}"></script>
-  <script src="{{ url_for('static', filename='vendor/purecounter/purecounter_vanilla.js')}}"></script>
-  <script src="{{ url_for('static', filename='vendor/swiper/swiper-bundle.min.js')}}"></script> 
--->
-
-  <script src="../static/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
-  <script src="../static/vendor/aos/aos.js"></script>
-  <script src="../static/vendor/glightbox/js/glightbox.min.js"></script>
-  <script src="../static/vendor/purecounter/purecounter_vanilla.js"></script>
-  <script src="../static/vendor/swiper/swiper-bundle.min.js"></script>
-
-  <!-- <script src="../assets/vendor/php-email-form/validate.js"></script> -->
-
-  <!-- Template Main JS File -->
-
-  <!-- <script src="{{ url_for('static', filename='js/main.js')}}"></script>  -->
-
-
-  <script src="../static/js/main.js"></script>
-</html>
+</body>
+{% endblock %}
