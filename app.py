@@ -27,9 +27,8 @@ def index():
         password1 = request.form.get("password1")
         user_input = {'name': user, 'email': email, 'password': password1}
         records.insert_one(user_input)
-        user_data = records.find_one({"email": email})
-        new_email = user_data['email']
-        return render_template('logged_in.html', email=new_email)
+        session["email"] = email
+        return render_template('logged_in.html', email=email)
     return render_template('index.html')
 
 @app.route('/logged_in')
@@ -39,7 +38,7 @@ def logged_in():
         return render_template('logged_in.html', email=email,)
     else:
         return redirect(url_for("login"))
-    
+
 
 @app.route("/login", methods=["POST", "GET"])
 def login():
