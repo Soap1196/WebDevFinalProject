@@ -1,5 +1,5 @@
 from flask import Flask, render_template, session, request, url_for, redirect
-import pymongo
+import pymongo, json
 import pandas as pd
 
 app = Flask(__name__)
@@ -10,12 +10,16 @@ from user import routes
 ManagementUserName = "M"
 ManagementPassword = "P"
 
-myclient = pymongo.MongoClient("mongodb://localhost:27017/")
-mydb = myclient["CustomerDB"]
-mycol = mydb["CustomerCollection"]
+mongo_client = pymongo.MongoClient("mongodb://localhost:27017/")
+mongo_db = mongo_client["CustomerDB"]
+customer_collection = mongo_db["CustomerCollection"]
+menu_collection = mongo_db["MenuCollection"]
 
-records = mycol
-
+# for converting Python objects to JSON strings in HTML templates
+# https://flask.palletsprojects.com/en/2.2.x/templating/#registering-filters
+@app.template_filter('json_dumps')
+def json_dumps(value):
+    return json.dumps(value)
 
 @app.route("/", methods=['POST', 'GET'])
 def index():
@@ -24,9 +28,15 @@ def index():
     if request.method == "POST":
         user = request.form.get("fullname")
         email = request.form.get("email")
-        password1 = request.form.get("password1")
-        user_input = {'name': user, 'email': email, 'password': password1}
-        records.insert_one(user_input)
+        password = request.form.get("password1")
+        user_input = {
+            'name': user,
+            'email': email,
+            'password': password,
+            'cart': [],
+            'cart_total': 0
+        }
+        customer_collection.insert_one(user_input)
         session["email"] = email
         return render_template('logged_in.html', email=email)
     return render_template('index.html')
@@ -43,11 +53,10 @@ def logged_in():
 @app.route("/login", methods=["POST", "GET"])
 def login():
     message = ''
-
     if request.method == "POST":
         email = request.form.get("email")
         password = request.form.get("password")
-        email_found = records.find_one({"email": email})
+        email_found = customer_collection.find_one({"email": email})
         if email_found:
             email_val = email_found['email']
             passwordcheck = email_found['password1']
@@ -68,51 +77,36 @@ def login():
 
 @app.route("/management", methods=["POST", "GET"])
 def managementLogin():
-
     if request.method == "POST":
-        myclient = pymongo.MongoClient("mongodb://localhost:27017/")
-        mydb = myclient["CustomerDB"]
-        myfood = mydb["MenuCollection"]
         UpdateFoodname = request.form.get("UpdateFoodName")
         UpdatePrice = request.form.get("UpdatePrice")
         UpdateAmount = request.form.get("UpdateAmount")
 
-        if myfood.find_one({ "food" : UpdateFoodname}) == None:
-            myfood.insert_one({ "food": UpdateFoodname, "supply": UpdateAmount, "price": UpdatePrice})
+        if menu_collection.find_one({ "food" : UpdateFoodname}) == None:
+            menu_collection.insert_one({ "food": UpdateFoodname, "supply": UpdateAmount, "price": UpdatePrice})
 
         if UpdateAmount != "":
-            myfood.update_one({ "food": UpdateFoodname }, { "$set": { "supply": UpdateAmount } })
+            menu_collection.update_one({ "food": UpdateFoodname }, { "$set": { "supply": UpdateAmount } })
 
         if UpdatePrice != "":
-            myfood.update_one({ "food": UpdateFoodname }, { "$set": { "price": UpdatePrice } })
+            menu_collection.update_one({ "food": UpdateFoodname }, { "$set": { "price": UpdatePrice } })
 
         print(UpdateAmount)
         print(UpdatePrice)
         print(UpdateFoodname)
-        # fresh connection to database
-        myclient = pymongo.MongoClient("mongodb://localhost:27017/")
-        mydb = myclient["CustomerDB"]
-        myfood = mydb["MenuCollection"]
 
-        fullmenu = myfood.find()
+        fullmenu = menu_collection.find()
         df =  pd.DataFrame(list(fullmenu))
         return render_template('management.html',  tables=[df.to_html(classes='data')], titles=df.columns.values)
 
-    myclient = pymongo.MongoClient("mongodb://localhost:27017/")
-    mydb = myclient["CustomerDB"]
-    myfood = mydb["MenuCollection"]
-
-    fullmenu = myfood.find()
+    fullmenu = menu_collection.find()
     df =  pd.DataFrame(list(fullmenu))
     return render_template('management.html',  tables=[df.to_html(classes='data')], titles=df.columns.values)
 
 @app.route("/menu", methods=["GET"])
 def foodmenu():
-    myclient = pymongo.MongoClient("mongodb://localhost:27017/")
-    mydb = myclient["CustomerDB"]
-    myfood = mydb["MenuCollection"]
     fullmenu = []
-    for x in myfood.find():
+    for x in menu_collection.find():
         fullmenu.append(x)
 
     email = ""
@@ -125,27 +119,42 @@ def foodmenu():
 # references:
 # - https://stackabuse.com/how-to-get-and-parse-http-post-body-in-flask-json-and-form-data/
 # - https://stackoverflow.com/questions/45412228/sending-json-and-status-code-with-a-flask-response
+# - https://www.w3schools.com/python/python_mongodb_update.asp
+# - https://www.mongodb.com/docs/manual/reference/operator/update/
 @app.route("/add-to-cart", methods=["POST"])
 def add_to_cart():
+    # log request data
     requestJson = request.get_json()
     print(f"received /add-to-cart request with data: {requestJson}")
 
-    addToCartData = requestJson.get('userEmailAndItemId')
-    if not addToCartData:
-        message = "could not add to cart; userEmailAndItemId not sent"
-        return {"message": message}, 400 # bad request status code!
+    # check user
+    if "email" not in session or not session["email"]:
+        message = "could not add to cart; user not logged in"
+        return {"message": message}, 401 # unauthorized
 
-    addToCartDataSplit = addToCartData.split()
-    if len(addToCartDataSplit) != 2:
-        message = "could not add to cart; userEmailAndItemId invalid"
-        return {"message": message}, 400 # bad request status code!
+    # check item
+    itemJson = requestJson.get('item')
+    if not itemJson:
+        message = "could not add to cart; item not sent"
+        return {"message": message}, 400 # bad request
 
-    userEmail = addToCartDataSplit[0]
-    itemId = addToCartDataSplit[1]
+    item = json.loads(itemJson)
 
-    print(f"adding item {itemId} to cart for user {userEmail}")
-    # TODO: actually add item to the user's cart in the database
+    # add item to user cart
+    customer_collection.update_one(
+        {'email': session['email']},
+        {'$push': {'cart': item}},
+        upsert=False
+    )
 
+    # increment user cart total
+    customer_collection.update_one(
+        {'email': session['email']},
+        {'$inc': {'cart_total': item['price']}},
+        upsert=False
+    )
+
+    print(f"added {item['food']} to cart for user {session['email']}")
     return {"message": "successfully added item to cart"}, 200
 
 if __name__ == "__main__":

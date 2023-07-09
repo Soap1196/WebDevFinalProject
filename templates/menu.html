@@ -80,18 +80,16 @@
                 - https://stackoverflow.com/questions/66256790/how-to-pass-a-jinja-variable-to-javascript
               -->
               {% if email %}
-              <button
-                type="button"
-                name="{{ email }} {{ item['_id'] }}"
-                onClick="addToCart(name)">
-              Add To Cart
+              <!-- using button name value as a workaround to get jinja item variable into JS function -->
+              <button type="button" name="{{ item | json_dumps }}" onClick="addToCart(name)">
+                Add To Cart
               </button>
               <script>
-                function addToCart(userEmailAndItemId) {
+                function addToCart(item) {
                   // send POST request to /add-to-cart endpoint
                   fetch("add-to-cart", {
                     method: "POST",
-                    body: JSON.stringify({userEmailAndItemId: userEmailAndItemId}),
+                    body: JSON.stringify({item: item}),
                     headers: {"Content-type": "application/json; charset=UTF-8"}
                   })
                     .then((response) => response.json())
@@ -130,45 +128,43 @@
             <p>Menu</p>
             <h3>Pastas</h3>
           </div>
-            <div class="row gy-5">
-              <!-- For loop through 'food' type matching current menu -->
-              {% for item in fullmenu %}
-              <!-- Change quoted part here to adjust search criteria -->
-              {% if item['type'] == 'pasta' %}
-              <div class="col-lg-4 menu-item">
-                <h4>{{ item['food'] }}</h4>
-                <p class="price">$ {{ item['price']|string }}</p>
-                <p class="ingredients">Supply {{ item['supply'] }}</p>
-                <!--
-                  Add To Cart feature (only for logged-in users)
-                  references:
-                  - https://www.freecodecamp.org/news/javascript-post-request-how-to-send-an-http-post-request-in-js/
-                  - https://stackoverflow.com/questions/66256790/how-to-pass-a-jinja-variable-to-javascript
-                -->
-                {% if email %}
-                <button
-                  type="button"
-                  name="{{ email }} {{ item['_id'] }}"
-                  onClick="addToCart(name)">
+          <div class="row gy-5">
+            <!-- For loop through 'food' type matching current menu -->
+            {% for item in fullmenu %}
+            <!-- Change quoted part here to adjust search criteria -->
+            {% if item['type'] == 'pasta' %}
+            <div class="col-lg-4 menu-item">
+              <h4>{{ item['food'] }}</h4>
+              <p class="price">$ {{ item['price']|string }}</p>
+              <p class="ingredients">Supply {{ item['supply'] }}</p>
+              <!--
+                Add To Cart feature (only for logged-in users)
+                references:
+                - https://www.freecodecamp.org/news/javascript-post-request-how-to-send-an-http-post-request-in-js/
+                - https://stackoverflow.com/questions/66256790/how-to-pass-a-jinja-variable-to-javascript
+              -->
+              {% if email %}
+              <!-- using button name value as a workaround to get jinja item variable into JS function -->
+              <button type="button" name="{{ item | json_dumps }}" onClick="addToCart(name)">
                 Add To Cart
-                </button>
-                <script>
-                  function addToCart(userEmailAndItemId) {
-                    // send POST request to /add-to-cart endpoint
-                    fetch("add-to-cart", {
-                      method: "POST",
-                      body: JSON.stringify({userEmailAndItemId: userEmailAndItemId}),
-                      headers: {"Content-type": "application/json; charset=UTF-8"}
-                    })
-                      .then((response) => response.json())
-                      .then((json) => console.log(json));
-                  }
-                </script>
-                {% endif %}
-              </div>
-              {% else %}
+              </button>
+              <script>
+                function addToCart(item) {
+                  // send POST request to /add-to-cart endpoint
+                  fetch("add-to-cart", {
+                    method: "POST",
+                    body: JSON.stringify({item: item}),
+                    headers: {"Content-type": "application/json; charset=UTF-8"}
+                  })
+                    .then((response) => response.json())
+                    .then((json) => console.log(json));
+                }
+              </script>
               {% endif %}
-              {% endfor %}
+            </div>
+            {% else %}
+            {% endif %}
+            {% endfor %}
             <!-- Menu Item -->
 
           </div>
@@ -198,18 +194,16 @@
                 - https://stackoverflow.com/questions/66256790/how-to-pass-a-jinja-variable-to-javascript
               -->
               {% if email %}
-              <button
-                type="button"
-                name="{{ email }} {{ item['_id'] }}"
-                onClick="addToCart(name)">
-              Add To Cart
+              <!-- using button name value as a workaround to get jinja item variable into JS function -->
+              <button type="button" name="{{ item | json_dumps }}" onClick="addToCart(name)">
+                Add To Cart
               </button>
               <script>
-                function addToCart(userEmailAndItemId) {
+                function addToCart(item) {
                   // send POST request to /add-to-cart endpoint
                   fetch("add-to-cart", {
                     method: "POST",
-                    body: JSON.stringify({userEmailAndItemId: userEmailAndItemId}),
+                    body: JSON.stringify({item: item}),
                     headers: {"Content-type": "application/json; charset=UTF-8"}
                   })
                     .then((response) => response.json())
