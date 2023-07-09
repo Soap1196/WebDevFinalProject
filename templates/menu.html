@@ -1,22 +1,8 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="utf-8">
-  <meta content="width=device-width, initial-scale=1.0" name="viewport">
-  <!-- Using url_for method -->
-  <!-- <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css')}}" >
-  <link rel="stylesheet" href="{{ url_for('static', filename='vendor/bootstrap/css/bootstrap.min.css')}}" >
-  <link rel="stylesheet" href="{{ url_for('static', filename='vendor/bootstrap-icons/bootstrap-icons.css')}}" >
-  <link rel="stylesheet" href="{{ url_for('static', filename='vendor/aos/aos.css')}}"> -->
+{% extends "base.html" %}
 
-  <link rel="stylesheet" href="../static/css/main.css" >
-  <link rel="stylesheet" href="../static/vendor/bootstrap/css/bootstrap.min.css" >
-  <link rel="stylesheet" href="../static/vendor/bootstrap-icons/bootstrap-icons.css" >
-  <link rel="stylesheet" href="../static/vendor/aos/aos.css">
-  {% block head %}{% endblock %}
-  <!-- <link href="assets/vendor/glightbox/css/glightbox.min.css" rel="stylesheet">
-  <link href="assets/vendor/swiper/swiper-bundle.min.css" rel="stylesheet"> -->
-</head>
+{% block title %}Menu{% endblock %}
+
+{% block content %}
 <body>
 <section id="menu" class="menu">
     <div class="container" data-aos="fade-up">
@@ -79,16 +65,40 @@
 
           <div class="row gy-5">
             <!-- For loop through 'food' type matching current menu -->
-            {% for n in fullmenu %}
+            {% for item in fullmenu %}
             <!-- Change quoted part here to adjust search criteria -->
-            {% if n['type'] == 'pizza' %}
+            {% if item['type'] == 'pizza' %}
             <div class="col-lg-4 menu-item">
-              <h4>{{ n['food'] }}</h4>
+              <h4>{{ item['food'] }}</h4>
               <!-- round(2) rounds decimal -->
-              <p class="price">$ {{ n['price']|string }}</p>
-              <p class="ingredients">Supply {{ n['supply'] }}</p>
+              <p class="price">$ {{ item['price']|string }}</p>
+              <p class="ingredients">Supply {{ item['supply'] }}</p>
+              <!--
+                Add To Cart feature (only for logged-in users)
+                references:
+                - https://www.freecodecamp.org/news/javascript-post-request-how-to-send-an-http-post-request-in-js/
+                - https://stackoverflow.com/questions/66256790/how-to-pass-a-jinja-variable-to-javascript
+              -->
+              {% if email %}
+              <!-- using button name value as a workaround to get jinja item variable into JS function -->
+              <button type="button" name="{{ item | json_dumps }}" onClick="addToCart(name)">
+                Add To Cart
+              </button>
+              <script>
+                function addToCart(item) {
+                  // send POST request to /add-to-cart endpoint
+                  fetch("add-to-cart", {
+                    method: "POST",
+                    body: JSON.stringify({item: item}),
+                    headers: {"Content-type": "application/json; charset=UTF-8"}
+                  })
+                    .then((response) => response.json())
+                    .then((json) => console.log(json));
+                }
+              </script>
+              {% endif %}
             </div>
-              {% else %}
+            {% else %}
             {% endif %}
             {% endfor %}
 
@@ -118,20 +128,43 @@
             <p>Menu</p>
             <h3>Pastas</h3>
           </div>
-
-            <div class="row gy-5">
-              <!-- For loop through 'food' type matching current menu -->
-              {% for n in fullmenu %}
-              <!-- Change quoted part here to adjust search criteria -->
-              {% if n['type'] == 'pasta' %}
-              <div class="col-lg-4 menu-item">
-                <h4>{{ n['food'] }}</h4>
-                <p class="price">$ {{ n['price']|string }}</p>
-                <p class="ingredients">Supply {{ n['supply'] }}</p>
-              </div>
-                {% else %}
+          <div class="row gy-5">
+            <!-- For loop through 'food' type matching current menu -->
+            {% for item in fullmenu %}
+            <!-- Change quoted part here to adjust search criteria -->
+            {% if item['type'] == 'pasta' %}
+            <div class="col-lg-4 menu-item">
+              <h4>{{ item['food'] }}</h4>
+              <p class="price">$ {{ item['price']|string }}</p>
+              <p class="ingredients">Supply {{ item['supply'] }}</p>
+              <!--
+                Add To Cart feature (only for logged-in users)
+                references:
+                - https://www.freecodecamp.org/news/javascript-post-request-how-to-send-an-http-post-request-in-js/
+                - https://stackoverflow.com/questions/66256790/how-to-pass-a-jinja-variable-to-javascript
+              -->
+              {% if email %}
+              <!-- using button name value as a workaround to get jinja item variable into JS function -->
+              <button type="button" name="{{ item | json_dumps }}" onClick="addToCart(name)">
+                Add To Cart
+              </button>
+              <script>
+                function addToCart(item) {
+                  // send POST request to /add-to-cart endpoint
+                  fetch("add-to-cart", {
+                    method: "POST",
+                    body: JSON.stringify({item: item}),
+                    headers: {"Content-type": "application/json; charset=UTF-8"}
+                  })
+                    .then((response) => response.json())
+                    .then((json) => console.log(json));
+                }
+              </script>
               {% endif %}
-              {% endfor %}
+            </div>
+            {% else %}
+            {% endif %}
+            {% endfor %}
             <!-- Menu Item -->
 
           </div>
@@ -147,15 +180,39 @@
 
           <div class="row gy-5">
             <!-- For loop through 'food' type matching current menu -->
-            {% for n in fullmenu %}
+            {% for item in fullmenu %}
             <!-- Change quoted part here to adjust search criteria -->
-            {% if n['type'] == 'drink' %}
+            {% if item['type'] == 'drink' %}
             <div class="col-lg-4 menu-item">
-              <h4>{{ n['food'] }}</h4>
-              <p class="price">$ {{ n['price']|string }}</p>
-              <p class="ingredients">Supply {{ n['supply'] }}</p>
+              <h4>{{ item['food'] }}</h4>
+              <p class="price">$ {{ item['price']|string }}</p>
+              <p class="ingredients">Supply {{ item['supply'] }}</p>
+              <!--
+                Add To Cart feature (only for logged-in users)
+                references:
+                - https://www.freecodecamp.org/news/javascript-post-request-how-to-send-an-http-post-request-in-js/
+                - https://stackoverflow.com/questions/66256790/how-to-pass-a-jinja-variable-to-javascript
+              -->
+              {% if email %}
+              <!-- using button name value as a workaround to get jinja item variable into JS function -->
+              <button type="button" name="{{ item | json_dumps }}" onClick="addToCart(name)">
+                Add To Cart
+              </button>
+              <script>
+                function addToCart(item) {
+                  // send POST request to /add-to-cart endpoint
+                  fetch("add-to-cart", {
+                    method: "POST",
+                    body: JSON.stringify({item: item}),
+                    headers: {"Content-type": "application/json; charset=UTF-8"}
+                  })
+                    .then((response) => response.json())
+                    .then((json) => console.log(json));
+                }
+              </script>
+              {% endif %}
             </div>
-              {% else %}
+            {% else %}
             {% endif %}
             {% endfor %}
           </div>
@@ -165,33 +222,7 @@
 
     </div>
   </section><!-- End Menu Section -->
-</body>
   <a href="#" class="scroll-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
-
   <div id="preloader"></div>
-
-  <!-- Vendor JS Files -->
-  <!-- Using url_for method -->
-<!--   
-  <script src="{{ url_for('static', filename='vendor/bootstrap/js/bootstrap.bundle.min.js')}}"></script>
-  <script src="{{ url_for('static', filename='vendor/aos/aos.js')}}"></script>
-  <script src="{{ url_for('static', filename='vendor/glightbox/js/glightbox.min.js')}}"></script>
-  <script src="{{ url_for('static', filename='vendor/purecounter/purecounter_vanilla.js')}}"></script>
-  <script src="{{ url_for('static', filename='vendor/swiper/swiper-bundle.min.js')}}"></script> 
--->
-
-  <script src="../static/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
-  <script src="../static/vendor/aos/aos.js"></script>
-  <script src="../static/vendor/glightbox/js/glightbox.min.js"></script>
-  <script src="../static/vendor/purecounter/purecounter_vanilla.js"></script>
-  <script src="../static/vendor/swiper/swiper-bundle.min.js"></script>
-
-  <!-- <script src="../assets/vendor/php-email-form/validate.js"></script> -->
-
-  <!-- Template Main JS File -->
-
-  <!-- <script src="{{ url_for('static', filename='js/main.js')}}"></script>  -->
-
-
-  <script src="../static/js/main.js"></script>
-</html>
+</body>
+{% endblock %}
