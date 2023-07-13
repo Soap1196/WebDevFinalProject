@@ -80,21 +80,31 @@ def managementLogin():
         mydb = myclient["CustomerDB"]
         myfood = mydb["MenuCollection"]
         UpdateFoodname = request.form.get("UpdateFoodName")
+        UpdateType = request.form.get("UpdateType")
         UpdatePrice = request.form.get("UpdatePrice")
         UpdateAmount = request.form.get("UpdateAmount")
+        DeleteItem = request.form.get("DeleteItem")
 
         if myfood.find_one({ "food" : UpdateFoodname}) == None:
-            myfood.insert_one({ "food": UpdateFoodname, "supply": UpdateAmount, "price": UpdatePrice})
+            myfood.insert_one({ "food": UpdateFoodname, "type": UpdateType, "supply": UpdateAmount, "price": UpdatePrice})
     
         if UpdateAmount != "":
             myfood.update_one({ "food": UpdateFoodname }, { "$set": { "supply": UpdateAmount } })
         
         if UpdatePrice != "":
-            myfood.update_one({ "food": UpdateFoodname }, { "$set": { "price": UpdatePrice } })    
+            myfood.update_one({ "food": UpdateFoodname }, { "$set": { "price": UpdatePrice } }) 
+
+        if UpdateType != "":
+            myfood.update_one({ "food": UpdateFoodname }, { "$set": { "type": UpdateType } })   
         
+        if (DeleteItem != "" and myfood.find_one({"food" : DeleteItem})!= None):
+            myfood.delete_one({ "food": DeleteItem })
+
         print(UpdateAmount)
+        print(UpdateType)
         print(UpdatePrice)
         print(UpdateFoodname)
+        print(DeleteItem)
         # fresh connection to database
         myclient = pymongo.MongoClient("mongodb://localhost:27017/")
         mydb = myclient["CustomerDB"]
@@ -110,6 +120,8 @@ def managementLogin():
 
     fullmenu = myfood.find()
     df =  pd.DataFrame(list(fullmenu))
+    #df.insert(loc = 5,column = 'Delete',value = '<input type="checkbox" \>')
+    #df.style
     return render_template('management.html',  tables=[df.to_html(classes='data')], titles=df.columns.values)
 
 
