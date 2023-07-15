@@ -180,6 +180,17 @@
             </tr>
             {% endfor %}
             <tr>
+
+               <button id="goToOrderButton">Go to Order Page</button>
+               <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+               <script>
+                  $(document).ready(function() {
+                     $('#goToOrderButton').click(function() {
+                       window.location.href = '/order';
+                     });
+                   });
+                   </script>
+               </script>
                <td colspan="3"></td>
                <th id="cart-total-cell">Cart Total: </td><span id="carttotal"></span>
             </tr>

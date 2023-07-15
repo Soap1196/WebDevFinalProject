@@ -51,7 +51,25 @@ def logged_in():
         return render_template('logged_in.html', email=email,)
     else:
         return redirect(url_for("login"))
-
+@app.route('/order', methods=["GET"])
+def place_Order():
+ if "email" in session:   
+    total = []
+    totalCart = []
+    currentCart = []
+    newCart = []
+    
+    for entry in customer_collection.find():
+        total = entry.get('cart_total')
+        if total:
+            totalCart.append(total)
+    for entry in customer_collection.find():
+        currentCart = entry.get('cart')
+        if currentCart:
+            print(customer_collection)
+            print(currentCart)
+    
+    return render_template('order.html', total=total, totalCart=totalCart)
 
 @app.route("/login", methods=["POST", "GET"])
 def login():
