@@ -82,32 +82,52 @@ def login():
 @app.route("/management", methods=["POST", "GET"])
 def managementLogin():
     if request.method == "POST":
+        myclient = pymongo.MongoClient("mongodb://localhost:27017/")
+        mydb = myclient["CustomerDB"]
+        myfood = mydb["MenuCollection"]
         UpdateFoodname = request.form.get("UpdateFoodName")
+        UpdateType = request.form.get("UpdateType")
         UpdatePrice = request.form.get("UpdatePrice")
         UpdateAmount = request.form.get("UpdateAmount")
+        DeleteItem = request.form.get("DeleteItem")
 
-        if menu_collection.find_one({"food": UpdateFoodname}) == None:
-            menu_collection.insert_one(
-                {"food": UpdateFoodname, "supply": UpdateAmount, "price": UpdatePrice})
-
+        if myfood.find_one({ "food" : UpdateFoodname}) == None:
+            myfood.insert_one({ "food": UpdateFoodname, "type": UpdateType, "supply": UpdateAmount, "price": UpdatePrice})
+    
         if UpdateAmount != "":
-            menu_collection.update_one({"food": UpdateFoodname}, {
-                                       "$set": {"supply": UpdateAmount}})
-
+            myfood.update_one({ "food": UpdateFoodname }, { "$set": { "supply": UpdateAmount } })
+        
         if UpdatePrice != "":
-            menu_collection.update_one({"food": UpdateFoodname}, {
-                                       "$set": {"price": UpdatePrice}})
+            myfood.update_one({ "food": UpdateFoodname }, { "$set": { "price": UpdatePrice } }) 
+
+        if UpdateType != "":
+            myfood.update_one({ "food": UpdateFoodname }, { "$set": { "type": UpdateType } })   
+        
+        if (DeleteItem != "" and myfood.find_one({"food" : DeleteItem})!= None):
+            myfood.delete_one({ "food": DeleteItem })
 
         print(UpdateAmount)
+        print(UpdateType)
         print(UpdatePrice)
         print(UpdateFoodname)
+        print(DeleteItem)
+        # fresh connection to database
+        myclient = pymongo.MongoClient("mongodb://localhost:27017/")
+        mydb = myclient["CustomerDB"]
+        myfood = mydb["MenuCollection"]
 
-        fullmenu = menu_collection.find()
-        df = pd.DataFrame(list(fullmenu))
+        fullmenu = myfood.find()
+        df =  pd.DataFrame(list(fullmenu))
         return render_template('management.html',  tables=[df.to_html(classes='data')], titles=df.columns.values)
 
-    fullmenu = menu_collection.find()
-    df = pd.DataFrame(list(fullmenu))
+    myclient = pymongo.MongoClient("mongodb://localhost:27017/")
+    mydb = myclient["CustomerDB"]
+    myfood = mydb["MenuCollection"]
+
+    fullmenu = myfood.find()
+    df =  pd.DataFrame(list(fullmenu))
+    #df.insert(loc = 5,column = 'Delete',value = '<input type="checkbox" \>')
+    #df.style
     return render_template('management.html',  tables=[df.to_html(classes='data')], titles=df.columns.values)
 
 
