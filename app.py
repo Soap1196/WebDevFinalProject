@@ -10,6 +10,8 @@ from user import routes
 ManagementUserName = "M"
 ManagementPassword = "P"
 
+cart = []
+
 mongo_client = pymongo.MongoClient("mongodb://localhost:27017/")
 mongo_db = mongo_client["CustomerDB"]
 customer_collection = mongo_db["CustomerCollection"]
@@ -44,19 +46,22 @@ def index():
 @app.route('/logged_in')
 def logged_in():
     if "email" in session:
-        email = session["email"]
-        return render_template('logged_in.html', email=email,)
+        return render_template('logged_in.html', email=session["email"])
     else:
         return redirect(url_for("login"))
 
 
 @app.route("/login", methods=["POST", "GET"])
 def login():
+    global cart
+    cart = []
     message = ''
     if request.method == "POST":
         email = request.form.get("email")
         password = request.form.get("password")
         email_found = customer_collection.find_one({"email": email})
+        if (password == ManagementPassword) and (email == ManagementUserName):
+            return redirect(url_for('managementLogin'))
         if email_found:
             email_val = email_found['email']
             passwordcheck = email_found['password1']
@@ -105,6 +110,7 @@ def managementLogin():
 
 @app.route("/menu", methods=["GET"])
 def foodmenu():
+    
     fullmenu = []
     for x in menu_collection.find():
         fullmenu.append(x)
@@ -123,6 +129,7 @@ def foodmenu():
 # - https://www.mongodb.com/docs/manual/reference/operator/update/
 @app.route("/add-to-cart", methods=["POST"])
 def add_to_cart():
+    global cart
     # log request data
     requestJson = request.get_json()
     print(f"received /add-to-cart request with data: {requestJson}")
@@ -140,6 +147,17 @@ def add_to_cart():
 
     item = json.loads(itemJson)
 
+    if menu_collection.find_one({ "food" : item['food']}):
+        foodSupply = (menu_collection.find_one({ "food" : item['food']})['supply'])
+        if foodSupply < 1:
+            print("out of food")
+            return {"message": "Out of food item"}, 200
+        else:
+            cart.append(foodSupply)
+            print(cart)
+            print("The food item is added")
+            
+
     # add item to user cart
     customer_collection.update_one(
         {'email': session['email']},
@@ -154,6 +172,7 @@ def add_to_cart():
         upsert=False
     )
 
+        #cart.append([])
     print(f"added {item['food']} to cart for user {session['email']}")
     return {"message": "successfully added item to cart"}, 200
 
