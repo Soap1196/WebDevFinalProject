@@ -80,6 +80,17 @@ def login():
             return render_template('login.html', message=message)
     return render_template('login.html', message=message)
 
+@app.route("/cart", methods=["POST", "GET"])
+def displayCart():
+    global cart
+    total = 0
+    for i in cart:
+        total = total + i['price']
+    if request.method == "POST":
+        print('post')
+    print(cart)
+    return render_template('cart.html', Totalcart = cart, total = total)
+
 @app.route("/management", methods=["POST", "GET"])
 def managementLogin():
     if request.method == "POST":
@@ -149,11 +160,11 @@ def add_to_cart():
 
     if menu_collection.find_one({ "food" : item['food']}):
         foodSupply = (menu_collection.find_one({ "food" : item['food']})['supply'])
-        if foodSupply < 1:
+        if int(foodSupply) < 1:
             print("out of food")
             return {"message": "Out of food item"}, 200
         else:
-            cart.append(foodSupply)
+            cart.append(menu_collection.find_one({ "food" : item['food']}))
             print(cart)
             print("The food item is added")
             
