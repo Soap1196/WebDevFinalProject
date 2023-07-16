@@ -47,8 +47,7 @@ def index():
 @app.route('/logged_in')
 def logged_in():
     if "email" in session:
-        email = session["email"]
-        return render_template('logged_in.html', email=email,)
+        return render_template('logged_in.html', email=session["email"],)
     else:
         return redirect(url_for("login"))
 
@@ -81,6 +80,8 @@ def login():
 
 @app.route("/management", methods=["POST", "GET"])
 def managementLogin():
+    if "email" in session != 'M':
+        return render_template('IllegalAction.html')
     if request.method == "POST":
         UpdateFoodname = request.form.get("UpdateFoodName")
         UpdatePrice = request.form.get("UpdatePrice")
@@ -110,6 +111,10 @@ def managementLogin():
     df = pd.DataFrame(list(fullmenu))
     return render_template('management.html',  tables=[df.to_html(classes='data')], titles=df.columns.values)
 
+@app.route('/IllegalAction')
+def IllegalAction():
+    return render_template('IllegalAction.html')
+    
 
 @app.route("/menu", methods=["GET"])
 def foodmenu():
