@@ -58,16 +58,40 @@ def place_Order():
     totalCart = []
     currentCart = []
     newCart = []
+    email = session["email"]
+
+    
     
     for entry in customer_collection.find():
-        total = entry.get('cart_total')
-        if total:
-            totalCart.append(total)
-    for entry in customer_collection.find():
-        currentCart = entry.get('cart')
-        if currentCart:
-            print(customer_collection)
-            print(currentCart)
+        if entry.get('email')  == email:
+            total = entry.get('cart_total')
+            if total:
+                totalCart.append(total)
+            currentCart = entry.get('cart')
+            #looking at the current cart for the user
+            if currentCart:
+                #looping through the items in the users current cart
+                for item in currentCart:
+                    #looping through the entries in the menu collection table
+                    for menu_entry in menu_collection.find():
+                        #if the food item is equal to the menu food item AND the item type is equal to the menu type
+                        if item.get('food') == menu_entry.get('food'):
+                            # decrement the menu supply by the item quantity in the cart and update the entry in the menu
+                            menu_supply = menu_entry['supply'] - item['quantity']
+                            
+                            menu_collection.update_one({"food": item.get('food')}, {
+                                       "$set": {"supply": menu_supply}})
+                            customer_collection.update_one({"email":email}, {
+                                "$set": {"cart": []}})
+                            # clearing the customer's cart
+                            customer_collection.update_one({"email":email}, {
+                                "$set": {"cart_total": 0}})
+                              
+                            print(menu_entry)
+            
+    # for entry in menu_collection.find():
+        
+
     
     return render_template('order.html', total=total, totalCart=totalCart)
 
