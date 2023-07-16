@@ -87,7 +87,12 @@ def displayCart():
     for i in cart:
         total = total + i['price']
     if request.method == "POST":
+        for i in cart:
+            menu_collection.update_one(i, { "$set": { "supply": (int(i['supply']) - 1) } })
+        cart = []
+        total = 0
         print('post')
+        return render_template('cart.html', Totalcart = cart, total = total)
     print(cart)
     return render_template('cart.html', Totalcart = cart, total = total)
 
