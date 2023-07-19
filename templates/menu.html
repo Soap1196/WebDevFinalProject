@@ -71,8 +71,8 @@
             <div class="col-lg-4 menu-item">
               <h4>{{ item['food'] }}</h4>
               <!-- round(2) rounds decimal -->
-              <p class="price">$ {{ item['price']|string }}</p>
-              <p class="ingredients">Supply {{ item['supply'] }}</p>
+              <p class="price">Price: $ {{ item['price']|string }}</p>
+              <p class="ingredients">Stock: {{ item['supply'] }}</p>
               <!--
                 Add To Cart feature (only for logged-in users)
                 references:
@@ -135,8 +135,8 @@
             {% if item['type'] == 'pasta' %}
             <div class="col-lg-4 menu-item">
               <h4>{{ item['food'] }}</h4>
-              <p class="price">$ {{ item['price']|string }}</p>
-              <p class="ingredients">Supply {{ item['supply'] }}</p>
+              <p class="price">Price: $ {{ item['price']|string }}</p>
+              <p class="ingredients">Stock: {{ item['supply'] }}</p>
               <!--
                 Add To Cart feature (only for logged-in users)
                 references:
@@ -185,8 +185,8 @@
             {% if item['type'] == 'drink' %}
             <div class="col-lg-4 menu-item">
               <h4>{{ item['food'] }}</h4>
-              <p class="price">$ {{ item['price']|string }}</p>
-              <p class="ingredients">Supply {{ item['supply'] }}</p>
+              <p class="price">Price: $ {{ item['price']|string }}</p>
+              <p class="ingredients">Stock: {{ item['supply'] }}</p>
               <!--
                 Add To Cart feature (only for logged-in users)
                 references:

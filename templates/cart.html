@@ -3,16 +3,16 @@
 
 {% block content %}
 
-<div>
-    <ul> 
+<div id="cart-list-div">
+    <ul id="cart-list-ul"> 
         {% for i in Totalcart %} 
-          <li>{{ i }}</a></li> 
+          <li class="cart-item-li">Item: {{ i['food'] }}, Price: ${{ i['price'] }} </li> 
         {% endfor %} 
         </ul> 
 </div>
 
 <div>
-    {{ total }}
+    <p>Total cost: ${{ total }}</p>
 </div>
 
 <form action="" method="post">
