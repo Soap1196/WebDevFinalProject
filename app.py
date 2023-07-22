@@ -19,14 +19,10 @@ menu_collection = mongo_db["MenuCollection"]
 
 # for converting Python objects to JSON strings in HTML templates
 # https://flask.palletsprojects.com/en/2.2.x/templating/#registering-filters
-@app.template_filter('json_dumps')
-def json_dumps(value):
-    return json.dumps(value)
+
 
 @app.route("/", methods=['POST', 'GET'])
 def index():
-    if "email" in session:
-        return redirect(url_for("logged_in"))
     if request.method == "POST":
         user = request.form.get("fullname")
         email = request.form.get("email")
