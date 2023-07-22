@@ -1,6 +1,7 @@
 from flask import Flask, render_template, session, request, url_for, redirect
 import pymongo, json
 import pandas as pd
+import random
 
 app = Flask(__name__)
 app.secret_key = "testing"
@@ -11,6 +12,7 @@ ManagementUserName = "M"
 ManagementPassword = "P"
 
 cart = []
+orderQ = []
 
 mongo_client = pymongo.MongoClient("mongodb://localhost:27017/")
 mongo_db = mongo_client["CustomerDB"]
@@ -83,12 +85,15 @@ def login():
 @app.route("/cart", methods=["POST", "GET"])
 def displayCart():
     global cart
+    global orderQ
     total = 0
     for i in cart:
         total = total + i['price']
     if request.method == "POST":
         for i in cart:
             menu_collection.update_one(i, { "$set": { "supply": (int(i['supply']) - 1) } })
+        orderQ.append(cart)
+        orderQ.append(total)
         cart = []
         total = 0
         print('post')
@@ -99,30 +104,55 @@ def displayCart():
 @app.route("/management", methods=["POST", "GET"])
 def managementLogin():
     if request.method == "POST":
+        global orderQ
+        myclient = pymongo.MongoClient("mongodb://localhost:27017/")
+        mydb = myclient["CustomerDB"]
+        myfood = mydb["MenuCollection"]
         UpdateFoodname = request.form.get("UpdateFoodName")
+        UpdateType = request.form.get("UpdateType")
         UpdatePrice = request.form.get("UpdatePrice")
         UpdateAmount = request.form.get("UpdateAmount")
+        DeleteItem = request.form.get("DeleteItem")
 
-        if menu_collection.find_one({ "food" : UpdateFoodname}) == None:
-            menu_collection.insert_one({ "food": UpdateFoodname, "supply": UpdateAmount, "price": UpdatePrice})
-
+        if myfood.find_one({ "food" : UpdateFoodname}) == None:
+            myfood.insert_one({ "_id":random.randint(0,999999999), "food": UpdateFoodname, "type": UpdateType, "supply": int(UpdateAmount), "price": int(UpdatePrice)})
+    
         if UpdateAmount != "":
-            menu_collection.update_one({ "food": UpdateFoodname }, { "$set": { "supply": UpdateAmount } })
-
+            myfood.update_one({ "_id":random.randint(0,999999999), "food": UpdateFoodname }, { "$set": { "supply": int(UpdateAmount) } })
+        
         if UpdatePrice != "":
-            menu_collection.update_one({ "food": UpdateFoodname }, { "$set": { "price": UpdatePrice } })
+            myfood.update_one({ "_id":random.randint(0,999999999), "food": UpdateFoodname }, { "$set": { "price": int(UpdatePrice) } }) 
+
+        if UpdateType != "":
+            myfood.update_one({ "_id":random.randint(0,999999999), "food": UpdateFoodname }, { "$set": { "type": UpdateType } })   
+        
+        if (DeleteItem != "" and myfood.find_one({"food" : DeleteItem})!= None):
+            myfood.delete_one({ "food": DeleteItem })
 
         print(UpdateAmount)
+        print(UpdateType)
         print(UpdatePrice)
         print(UpdateFoodname)
+        print(DeleteItem)
+        # fresh connection to database
+        myclient = pymongo.MongoClient("mongodb://localhost:27017/")
+        mydb = myclient["CustomerDB"]
+        myfood = mydb["MenuCollection"]
 
-        fullmenu = menu_collection.find()
+        fullmenu = myfood.find()
         df =  pd.DataFrame(list(fullmenu))
-        return render_template('management.html',  tables=[df.to_html(classes='data')], titles=df.columns.values)
+        return render_template('management.html',  tables=[df.to_html(classes='data')], titles=df.columns.values, orderQ = orderQ)
 
-    fullmenu = menu_collection.find()
+    myclient = pymongo.MongoClient("mongodb://localhost:27017/")
+    mydb = myclient["CustomerDB"]
+    myfood = mydb["MenuCollection"]
+
+    fullmenu = myfood.find()
     df =  pd.DataFrame(list(fullmenu))
+    #df.insert(loc = 5,column = 'Delete',value = '<input type="checkbox" \>')
+    #df.style
     return render_template('management.html',  tables=[df.to_html(classes='data')], titles=df.columns.values)
+
 
 @app.route("/menu", methods=["GET"])
 def foodmenu():
