@@ -10,3 +10,5 @@ login and CSS reference: https://medium.com/codex/simple-registration-login-syst
 
 for help with jinja2 https://jinja.palletsprojects.com/en/3.1.x/templates/#jinja-filters.round
 
+Image: https://www.pngwing.com/en/free-png-zcouj, https://www.pinterest.com/pin/781093129108954367/
+

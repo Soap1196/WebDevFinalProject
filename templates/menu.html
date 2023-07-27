@@ -2,14 +2,39 @@
 
 {% block title %}Menu{% endblock %}
 
+{%block styles%}
+<style>
+  .flipped-image {
+    transform: scaleX(-1);
+  }
+</style>
+
+
+{% endblock %}
+
+
+
+
 {% block content %}
+
+<style>
+  .flipped-image {
+    transform: scaleX(-1);
+
+    bold {
+      font-weight: bold;
+    }
+  }
+</style>
 <body>
 <section id="menu" class="menu">
     <div class="container" data-aos="fade-up">
 
       <div class="section-header">
-        <h2>Our Menu</h2>
-        <p>Check Our <span>Yummy Menu</span></p>
+        
+       <p><span><img src="static\images\pizza_logo2.png"  alt="Pizza" width="30" height="30">Welcome to <span>Pizza-Hut</span><span><img src="static\images\pizza_logo2.png" class = "flipped-image" alt="Pizza" width="30" height="30" ></span></p>
+        <br>
+       
       </div>
 
       <ul class="nav nav-tabs d-flex justify-content-center" data-aos="fade-up" data-aos-delay="200">
@@ -59,7 +84,7 @@
         <div class="tab-pane fade" id="menu-breakfast">
 
           <div class="tab-header text-center">
-            <p>Menu</p>
+            
             <h3>Pizzas</h3>
           </div>
 
@@ -81,7 +106,7 @@
               -->
               {% if email %}
               <!-- using button name value as a workaround to get jinja item variable into JS function -->
-              <button type="button" name="{{ item | json_dumps }}" onClick="addToCart(name)">
+              <button type="button" class="btn btn-danger" name="{{ item | json_dumps }}" onClick="addToCart(name)">
                 Add To Cart
               </button>
               <script>
@@ -125,7 +150,7 @@
         <div class="tab-pane fade" id="menu-lunch">
 
           <div class="tab-header text-center">
-            <p>Menu</p>
+            
             <h3>Pastas</h3>
           </div>
           <div class="row gy-5">
@@ -145,7 +170,7 @@
               -->
               {% if email %}
               <!-- using button name value as a workaround to get jinja item variable into JS function -->
-              <button type="button" name="{{ item | json_dumps }}" onClick="addToCart(name)">
+              <button type="button" class="btn btn-danger" name="{{ item | json_dumps }}" onClick="addToCart(name)">
                 Add To Cart
               </button>
               <script>
@@ -174,7 +199,7 @@
         <div class="tab-pane fade" id="menu-dinner">
 
           <div class="tab-header text-center">
-            <p>Menu</p>
+            
             <h3>Drinks</h3>
           </div>
 
@@ -195,7 +220,7 @@
               -->
               {% if email %}
               <!-- using button name value as a workaround to get jinja item variable into JS function -->
-              <button type="button" name="{{ item | json_dumps }}" onClick="addToCart(name)">
+              <button type="button" class="btn btn-danger" name="{{ item | json_dumps }}" onClick="addToCart(name)">
                 Add To Cart
               </button>
               <script>

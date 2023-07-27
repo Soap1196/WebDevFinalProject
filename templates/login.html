@@ -1,5 +1,66 @@
 {% extends "base.html" %}
 {% block title %}Login System{% endblock %}
+{% block styles %}
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    background-color: #f7f7f7;
+    color: #333;
+    line-height: 1.6;
+  }
+
+  .container {
+    max-width: 400px;
+    margin: 0 auto;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #fff;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  }
+
+  .form-group {
+    margin-bottom: 20px;
+  }
+
+  label {
+    font-weight: bold;
+    display: block;
+    margin-bottom: 5px;
+  }
+
+  input.form-control {
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 10px;
+    width: 100%;
+  }
+
+  button.btn-primary {
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    padding: 10px 20px;
+    cursor: pointer;
+  }
+
+  .alert {
+    background-color: #f8d7da;
+    color: #721c24;
+    padding: 10px;
+    border: 1px solid #f5c6cb;
+    border-radius: 5px;
+    margin-bottom: 20px;
+  }
+
+  .form-row {
+    position: relative;
+    margin-bottom: 0.5rem;
+}
+
+</style>
+{% endblock %}
 
 {% block content %}
 
@@ -8,16 +69,17 @@
         <p>{{ message }}</p>
     </div>
 {% endif %}
-
+<div class = "container">
 <form action="" method="post">
   <div class="form-group">
-      <label for="InputEmail">Email address</label>
+      <label for="InputEmail">Email Address</label>
       <input name="email" class="form-control" id="InputEmail"  placeholder="Enter email">
   </div>
     <div class="form-group">
       <label for="InputPassword">Password</label>
       <input type="password" name="password" class="form-control" id="InputPassword" placeholder="Password">
   </div>
-  <button type="submit" class="btn btn-primary">Submit</button>
+  <button type="submit" class="btn btn-danger">Submit</button>
 </form>
+</div>
 {% endblock %}
