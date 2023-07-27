@@ -5,7 +5,7 @@
 <div>
 <p>This is the management page</p>
 <p>Orders in Queue</p>
-<p>{{  orderQ  }}</p>
+
 <body>
 
     {% for table in tables %}
@@ -15,6 +15,10 @@
     </body>
     <form action="" method="post">
         <div class="form-group">
+            <input type="radio" id="Add" name="Add" value="Add">
+            <label for="Add">Add Item</label><br>
+            <input type="radio" id="Modify" name="Modify" value="Modify">
+            <label for="Modify">Modify Item</label><br><br>
             <label for="Food Data">Update Stock</label>
             <input name="UpdateFoodName" class="form-control" id="InputFood"  placeholder="">
             <label for="">Update Type</label>
@@ -28,5 +32,13 @@
         <button type="submit" class="btn btn-primary">Update</button>
         </div>
       </form>
+      <p>Orders in Queue</p>
+<ol>
+    
+    {% for table in orderQ %}
+    {{titles[loop.index]}}
+    <li>{{ table|safe }}</li>
+    {% endfor %}     
+</ol>
 </div>
 {% endblock %}

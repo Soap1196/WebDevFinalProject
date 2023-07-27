@@ -85,15 +85,14 @@ def login():
 @app.route("/cart", methods=["POST", "GET"])
 def displayCart():
     global cart
-    global orderQ
     total = 0
     for i in cart:
         total = total + i['price']
     if request.method == "POST":
         for i in cart:
             menu_collection.update_one(i, { "$set": { "supply": (int(i['supply']) - 1) } })
-        orderQ.append(cart)
-        orderQ.append(total)
+        global orderQ
+        orderQ.append([cart,total])
         cart = []
         total = 0
         print('post')
@@ -103,31 +102,36 @@ def displayCart():
 
 @app.route("/management", methods=["POST", "GET"])
 def managementLogin():
+    global orderQ
     if request.method == "POST":
-        global orderQ
         myclient = pymongo.MongoClient("mongodb://localhost:27017/")
         mydb = myclient["CustomerDB"]
         myfood = mydb["MenuCollection"]
+        Add = request.form.get("Add")
+        Modify = request.form.get("Modify")
         UpdateFoodname = request.form.get("UpdateFoodName")
         UpdateType = request.form.get("UpdateType")
         UpdatePrice = request.form.get("UpdatePrice")
         UpdateAmount = request.form.get("UpdateAmount")
         DeleteItem = request.form.get("DeleteItem")
-
-        if myfood.find_one({ "food" : UpdateFoodname}) == None:
-            myfood.insert_one({ "_id":random.randint(0,999999999), "food": UpdateFoodname, "type": UpdateType, "supply": int(UpdateAmount), "price": int(UpdatePrice)})
-    
-        if UpdateAmount != "":
-            myfood.update_one({ "_id":random.randint(0,999999999), "food": UpdateFoodname }, { "$set": { "supply": int(UpdateAmount) } })
-        
-        if UpdatePrice != "":
-            myfood.update_one({ "_id":random.randint(0,999999999), "food": UpdateFoodname }, { "$set": { "price": int(UpdatePrice) } }) 
-
-        if UpdateType != "":
-            myfood.update_one({ "_id":random.randint(0,999999999), "food": UpdateFoodname }, { "$set": { "type": UpdateType } })   
-        
+        print(Modify)
+        print("||||")
+        print(Add)
         if (DeleteItem != "" and myfood.find_one({"food" : DeleteItem})!= None):
             myfood.delete_one({ "food": DeleteItem })
+        if Add:
+            if myfood.find_one({ "food" : UpdateFoodname}) == None:
+                myfood.insert_one({ "_id":random.randint(0,999999999), "food": UpdateFoodname, "type": UpdateType, "supply": int(UpdateAmount), "price": int(UpdatePrice)})
+        if Modify:
+            if UpdateAmount != "":
+                myfood.update_one({ "food": UpdateFoodname }, { "$set": { "supply": int(UpdateAmount) } })
+            
+            if UpdatePrice != "":
+                myfood.update_one({ "food": UpdateFoodname }, { "$set": { "price": int(UpdatePrice) } }) 
+
+            if UpdateType != "":
+                myfood.update_one({ "food": UpdateFoodname }, { "$set": { "type": UpdateType } })   
+        
 
         print(UpdateAmount)
         print(UpdateType)
@@ -151,7 +155,7 @@ def managementLogin():
     df =  pd.DataFrame(list(fullmenu))
     #df.insert(loc = 5,column = 'Delete',value = '<input type="checkbox" \>')
     #df.style
-    return render_template('management.html',  tables=[df.to_html(classes='data')], titles=df.columns.values)
+    return render_template('management.html',  tables=[df.to_html(classes='data')], titles=df.columns.values, orderQ = orderQ)
 
 
 @app.route("/menu", methods=["GET"])
