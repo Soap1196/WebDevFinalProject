@@ -107,22 +107,22 @@ def managementLogin():
         myclient = pymongo.MongoClient("mongodb://localhost:27017/")
         mydb = myclient["CustomerDB"]
         myfood = mydb["MenuCollection"]
-        Add = request.form.get("Add")
-        Modify = request.form.get("Modify")
+        Radio = request.form.get("Radio")
         UpdateFoodname = request.form.get("UpdateFoodName")
         UpdateType = request.form.get("UpdateType")
         UpdatePrice = request.form.get("UpdatePrice")
         UpdateAmount = request.form.get("UpdateAmount")
         DeleteItem = request.form.get("DeleteItem")
-        print(Modify)
         print("||||")
-        print(Add)
+        #print(Radio)
+        print(DeleteItem)
         if (DeleteItem != "" and myfood.find_one({"food" : DeleteItem})!= None):
             myfood.delete_one({ "food": DeleteItem })
-        if Add:
-            if myfood.find_one({ "food" : UpdateFoodname}) == None:
-                myfood.insert_one({ "_id":random.randint(0,999999999), "food": UpdateFoodname, "type": UpdateType, "supply": int(UpdateAmount), "price": int(UpdatePrice)})
-        if Modify:
+            return render_template('management.html',  tables=[df.to_html(classes='data')], titles=df.columns.values, orderQ = orderQ)
+        if Radio == "Add":
+            myfood.insert_one({ "_id":random.randint(0,999999999), "food": UpdateFoodname, "type": UpdateType, "supply": int(UpdateAmount), "price": int(UpdatePrice)})
+            return render_template('management.html',  tables=[df.to_html(classes='data')], titles=df.columns.values, orderQ = orderQ)
+        if Radio == "Modify":
             if UpdateAmount != "":
                 myfood.update_one({ "food": UpdateFoodname }, { "$set": { "supply": int(UpdateAmount) } })
             
