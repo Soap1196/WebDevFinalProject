@@ -35,9 +35,13 @@
       <p>Orders in Queue</p>
 <ol>
     
-    {% for table in orderQ %}
-    {{titles[loop.index]}}
-    <li>{{ table|safe }}</li>
+    {% for k,r in orderQ %}
+    <li>
+        {% for r in k %}
+            {{ r['food']|safe }} ${{r['price']|safe}}
+        {% endfor %}
+    </li>
+    <!-- {{k[loop.index]}} -->
     {% endfor %}     
 </ol>
 </div>
