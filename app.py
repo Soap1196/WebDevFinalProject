@@ -47,10 +47,10 @@ def index():
 
 @app.route('/logged_in')
 def logged_in():
-    if "email" in session:
-        return render_template('logged_in.html', email=session["email"])
-    else:
+    if "email" not in session:
         return redirect(url_for("login"))
+    else:
+        return render_template('logged_in.html', email=session["email"])
 
 
 @app.route("/login", methods=["POST", "GET"])
@@ -65,10 +65,10 @@ def login():
         if (password == ManagementPassword) and (email == ManagementUserName):
             return redirect(url_for('managementLogin'))
         if email_found:
-            email_val = email_found['email']
-            passwordcheck = email_found['password1']
-            if (password == passwordcheck):
-                session["email"] = email_val
+            e_val = email_found['email']
+            checkpassword = email_found['password1']
+            if (password == checkpassword):
+                session["email"] = e_val
                 return redirect(url_for('logged_in'))
             else:
                 if "email" in session:
@@ -114,13 +114,25 @@ def managementLogin():
         UpdateAmount = request.form.get("UpdateAmount")
         DeleteItem = request.form.get("DeleteItem")
         print("||||")
-        #print(Radio)
-        print(DeleteItem)
-        if (DeleteItem != "" and myfood.find_one({"food" : DeleteItem})!= None):
-            myfood.delete_one({ "food": DeleteItem })
+        print(Radio)
+
+        # fresh connection to database
+        myclient = pymongo.MongoClient("mongodb://localhost:27017/")
+        mydb = myclient["CustomerDB"]
+        myfood = mydb["MenuCollection"]
+
+        fullmenu = myfood.find()
+        df =  pd.DataFrame(list(fullmenu))
+        
+        if (Radio =="Delete") and (myfood.find_one({"food" : UpdateFoodname})!= None):
+            myfood.delete_one({ "food": UpdateFoodname})
+            fullmenu = myfood.find()
+            df =  pd.DataFrame(list(fullmenu))
             return render_template('management.html',  tables=[df.to_html(classes='data')], titles=df.columns.values, orderQ = orderQ)
         if Radio == "Add":
             myfood.insert_one({ "_id":random.randint(0,999999999), "food": UpdateFoodname, "type": UpdateType, "supply": int(UpdateAmount), "price": int(UpdatePrice)})
+            fullmenu = myfood.find()
+            df =  pd.DataFrame(list(fullmenu))
             return render_template('management.html',  tables=[df.to_html(classes='data')], titles=df.columns.values, orderQ = orderQ)
         if Radio == "Modify":
             if UpdateAmount != "":
@@ -131,20 +143,9 @@ def managementLogin():
 
             if UpdateType != "":
                 myfood.update_one({ "food": UpdateFoodname }, { "$set": { "type": UpdateType } })   
-        
 
-        print(UpdateAmount)
-        print(UpdateType)
-        print(UpdatePrice)
-        print(UpdateFoodname)
-        print(DeleteItem)
-        # fresh connection to database
-        myclient = pymongo.MongoClient("mongodb://localhost:27017/")
-        mydb = myclient["CustomerDB"]
-        myfood = mydb["MenuCollection"]
-
-        fullmenu = myfood.find()
-        df =  pd.DataFrame(list(fullmenu))
+            fullmenu = myfood.find()
+            df =  pd.DataFrame(list(fullmenu))
         return render_template('management.html',  tables=[df.to_html(classes='data')], titles=df.columns.values, orderQ = orderQ)
 
     myclient = pymongo.MongoClient("mongodb://localhost:27017/")

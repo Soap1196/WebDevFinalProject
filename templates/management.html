@@ -16,9 +16,12 @@
     <form action="" method="post">
         <div class="form-group">
             <input type="radio" id="Add" name="Radio" value="Add" checked="checked">
-            <label for="Add">Add Item</label><br>
+            <label for="Add">Add Item</label>
             <input type="radio" id="Modify" name="Radio" value="Modify">
-            <label for="Modify">Modify Item</label><br><br>
+            <label for="Modify">Modify Item</label>
+            <input type="radio" id="Delete" name="Radio" value="Delete">
+            <label for="Delete">Delete Item</label>
+            <br>
             <label for="Food Data">Update Stock</label>
             <input name="UpdateFoodName" class="form-control" id="InputFood"  placeholder="">
             <label for="">Update Type</label>
@@ -27,9 +30,7 @@
             <input type="price" name="UpdatePrice" class="form-control" id="InputPrice" placeholder="">
             <label for="">Update Supply</label>
             <input type="amount" name="UpdateAmount" class="form-control" id="InputAmount" placeholder="">
-            <label for = ""> Delete Item</label>
-            <input type="item" name="DeleteItem" class="form-control" id="InputItem" placeholder="">
-        <button type="submit" class="btn btn-danger">Update</button>
+        <button type="submit" class="btn btn-primary">Update</button>
         </div>
       </form>
       <p>Orders in Queue</p>
@@ -42,7 +43,7 @@
         {% endfor %}
     </li>
     <!-- {{k[loop.index]}} -->
-    {% endfor %}     
+    {% endfor %}    
 </ol>
 </div>
 {% endblock %}
