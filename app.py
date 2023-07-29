@@ -49,36 +49,32 @@ def index():
 def logged_in():
     if "email" not in session:
         return redirect(url_for("login"))
-    else:
-        return render_template('logged_in.html', email=session["email"])
+    return render_template('logged_in.html', email=session["email"])
 
 
 @app.route("/login", methods=["POST", "GET"])
 def login():
     global cart
     cart = []
-    message = ''
+    message = 'Welcome'
     if request.method == "POST":
-        email = request.form.get("email")
-        password = request.form.get("password")
-        email_found = customer_collection.find_one({"email": email})
-        if (password == ManagementPassword) and (email == ManagementUserName):
+        if (request.form.get("password") == ManagementPassword) and (request.form.get("email") == ManagementUserName):
             return redirect(url_for('managementLogin'))
-        if email_found:
-            e_val = email_found['email']
-            checkpassword = email_found['password1']
-            if (password == checkpassword):
-                session["email"] = e_val
+        if customer_collection.find_one({"email": request.form.get("email")}):
+            e_val = customer_collection.find_one({"email": request.form.get("email")})
+            checkpassword = customer_collection.find_one({"email": request.form.get("email")})['password']
+            if (request.form.get("password") == checkpassword):
+                session["email"] = e_val['email']
                 return redirect(url_for('logged_in'))
             else:
                 if "email" in session:
                     return redirect(url_for("logged_in"))
-                message = 'Wrong password'
+                message = 'Password not in database'
                 return render_template('login.html', message=message)
-        if (password == ManagementPassword) and (email == ManagementUserName):
+        if (request.form.get("password") == ManagementPassword) and (request.form.get("email") == ManagementUserName):
             return redirect(url_for('managementLogin'))
         else:
-            message = 'Email not found'
+            message = 'Email not in database'
             return render_template('login.html', message=message)
     return render_template('login.html', message=message)
 
