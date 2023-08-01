@@ -3,22 +3,223 @@
 
 {% block content %}
 
-<div id="cart-list-div">
+<!-- <div id="cart-list-div">
     <ul id="cart-list-ul"> 
         {% for i in Totalcart %} 
-          <li class="cart-item-li">Item: {{ i['food'] }}, Price: ${{ i['price'] }} </li> 
+          <li class="cart-item-li">Item: {{ i['food'] }}, Price: ${{ i['price'] }},Quantity: ${{ i['quantity'] }} </li> 
         {% endfor %} 
         </ul> 
 </div>
 
 <div>
     <p><b>Total Cost: $</b>{{ total }}</p>
-</div>
+</div> -->
 
-<form action="" method="post">
-  <div class="form-group">
-  <button type="submit" class="btn btn-danger">Submit Order</button>
-  </div>
-</form>
+
+<!DOCTYPE html>
+<html>
+   <head>
+      <title>Cart Data</title>
+      <style>
+         ul {
+         list-style-type: none;
+         padding: 0;
+         }
+         li {
+         margin-bottom: 10px;
+         display: flex;
+         align-items: center;
+         justify-content: space-between;
+         }
+         /* .cart-item {
+         display: flex;
+         align-items: center;
+         }
+         .cart-item-name {
+         margin-right: 10px;
+         } */
+         /* .cart-buttons {
+         display: flex;
+         align-items: center;
+         } */
+         .cart-button {
+         background-color: #4CAF50;
+         color: white;
+         border: none;
+         padding: 8px 12px;
+         font-size: 14px;
+         border-radius: 10px;
+         margin-right: 10px;
+         }
+         .cart-button:hover {
+         background-color: #45a049;
+         }
+         .cart-button.delete {
+         background-color: #f44336;
+         }
+         .cart-button.delete:hover {
+         background-color: #d32f2f;
+         }
+         /* .quantity-dropdown {
+         margin-right: 10px;
+         } */
+         .quantity-input {
+         width: 75px;
+         margin-right: 15px;
+         }
+         @keyframes fadeOut {
+         from {opacity: 1;}
+         to {opacity: 0;}
+         }
+         table {
+         margin: 35px auto; 
+         width: 80%; 
+         }
+         th, td {
+         padding: 10px; 
+         text-align: center; 
+         }
+         tbody tr:nth-child(even) {
+         background-color: #f8f0d7; 
+         }
+         tbody tr:hover {
+         background-color: #ffffff;
+         }
+      </style>
+      <!-- Add this script tag before other scripts -->
+      <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+      <script>
+         $(document).ready(function() {
+         debugger;
+             updateTotal();
+             debugger;
+         });
+
+         function updateTotal(){
+             $.ajax({
+         type: 'GET',
+         url: "/getTotal",
+         async: false,
+         contentType: "application/json",
+         success: function(data) {
+         returnData = data;
+             document.getElementById("carttotal").textContent = data;
+         },
+         error: function(e) {
+         console.log(e);
+         },
+         done: function(e) {
+         console.log("DONE");
+         }
+         });
+
+         }
+         function updateCartItem(itemId) {
+         const quantityInput = document.getElementById(`${itemId}-quantity-input`);
+
+         if (quantityInput.value !== "") {
+         const quantity = quantityInput.value;
+         $.ajax({
+         type: 'POST',
+         url: "/update",
+         async: false,
+         data: JSON.stringify({ prodId: itemId, qty: quantity }),
+         contentType: "application/json",
+         success: function(data) {
+         returnData = data;
+         debugger;
+            if(data == "Quantity updated successfully "){
+             document.getElementById(`${itemId}-quantity-cell`).textContent = quantity;
+            }
+             document.getElementById('msg').innerHTML = data;
+             updateTotal();
+         },
+         error: function(e) {
+         console.log(e);
+         },
+         done: function(e) {
+         console.log("DONE");
+         }
+         });
+
+         }
+         }
+
+
+         function removeCartItem(itemId) {
+             const confirmed = confirm("Are you sure you want to delete this item?");
+             if (confirmed) {
+
+                 $.ajax({
+                        type: 'POST',
+                        url: "/delete",
+                        data: JSON.stringify({ prodId: itemId }),
+                        async: false,
+                        contentType: "application/json",
+                        success: function(data) {
+                         const liElement = document.getElementById(itemId);
+                         liElement.style.animation = "fadeOut 0.5s forwards";
+                         setTimeout(() => {
+                             liElement.remove();
+                         }, 500);
+                         updateTotal();
+         },
+         error: function(e) {
+             console.error('Error:', error);
+             alert('Error deleting item. Please try again.');
+         },
+         done: function(e) {
+         console.log("DONE");
+         }
+         });
+        }
+         }
+      </script>
+   </head>
+   <body>
+      <div class="alert alert-warning center" role="alert" id="msg" style="text-align: center;">
+       </div>
+      <h1 style="text-align: center;"> Cart </h1>
+      <table>
+         <thead>
+            <tr>
+               <th>Food</th>
+               <th>Price</th>
+               <th>Quantity</th>
+               <th>Actions</th>
+            </tr>
+         </thead>
+         <tbody>
+            {% for item in cart_data %}
+            <tr id="{{ item._id }}">
+               <td>{{ item.food }}</td>
+               <td>{{ item.price }}</td>
+               <td id="{{ item._id }}-quantity-cell">{{ item.quantity }}</td>
+               <td>
+                  <input type="number" name="quantityItem" class="quantity-input" id="{{ item._id }}-quantity-input" min="1" placeholder="Quantity" value="{{item.quantity}}">
+                  <button class="cart-button" onclick="updateCartItem('{{ item._id }}')">Update</button>
+                  <button class="cart-button delete" onclick="removeCartItem('{{ item._id }}')">Delete</button>
+               </td>
+            </tr>
+            {% endfor %}
+            <tr>
+               <td colspan="3"></td>
+               <th id="cart-total-cell">Cart Total: </td><span id="carttotal">{{ total }}</span>
+            </tr>
+           
+         </tbody>
+         
+      </table>
+      <div class="text-center">
+         <form action="" method="post">
+           <div class="form-group">
+             <button type="submit" class="btn btn-danger">Submit Order</button>
+           </div>
+         </form>
+       </div>
+       
+   </body>
+</html>
 
 {% endblock %}

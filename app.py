@@ -82,19 +82,39 @@ def login():
 def displayCart():
     global cart
     total = 0
-    for i in cart:
-        total = total + i['price']
+    # commenting because total of cart is hendled through the items in cart at line 92
+    # for i in cart:
+    #     total = total + i['price']
+
+    # this method will sync the cart variable and cart data om database
+    refreshCart()
+    
+
+    for item in cart:
+        price = item.get('price', 0)
+        qty = int(item.get('quantity', 0))
+        total += price * qty
     if request.method == "POST":
-        for i in cart:
-            menu_collection.update_one(i, { "$set": { "supply": (int(i['supply']) - 1) } })
+        # changed the condition because Quantity is added for ease
+        # for i in cart:
+        #     menu_collection.update_one(i, { "$set": { "supply": (int(i['supply']) - 1) } })
+        for item in cart:
+            filter_query = {'_id': item['_id']}
+            new_supply = int(item['supply']) - int(item['quantity'])
+            update_query = {"$set": {"supply": new_supply}}
+            menu_collection.update_one(filter_query, update_query)
+
         global orderQ
         orderQ.append([cart,total])
         cart = []
         total = 0
         print('post')
-        return render_template('cart.html', Totalcart = cart, total = total)
+        # empty the cart data when click on submit
+        emptyCart()
+        return render_template('cart.html', Totalcart = cart, total = total, cart_data =cart)
     print(cart)
-    return render_template('cart.html', Totalcart = cart, total = total)
+   
+    return render_template('cart.html', Totalcart = cart, total = total, cart_data =cart)
 
 @app.route("/management", methods=["POST", "GET"])
 def managementLogin():
@@ -126,7 +146,8 @@ def managementLogin():
             df =  pd.DataFrame(list(fullmenu))
             return render_template('management.html',  tables=[df.to_html(classes='data')], titles=df.columns.values, orderQ = orderQ)
         if Radio == "Add":
-            myfood.insert_one({ "_id":random.randint(0,999999999), "food": UpdateFoodname, "type": UpdateType, "supply": int(UpdateAmount), "price": int(UpdatePrice)})
+            # updating the limit because it is going out of integer limit and we never gonna have more than 999 types of food items.
+            myfood.insert_one({ "_id":random.randint(0,999), "food": UpdateFoodname, "type": UpdateType, "supply": int(UpdateAmount), "price": int(UpdatePrice)})
             fullmenu = myfood.find()
             df =  pd.DataFrame(list(fullmenu))
             return render_template('management.html',  tables=[df.to_html(classes='data')], titles=df.columns.values, orderQ = orderQ)
@@ -194,23 +215,49 @@ def add_to_cart():
 
     item = json.loads(itemJson)
 
+    # Check if the item already exists in the cart
+    existing_item = customer_collection.find_one(
+        {'email': session['email'], 'cart.food': item['food']}
+    )
+
     if menu_collection.find_one({ "food" : item['food']}):
         foodSupply = (menu_collection.find_one({ "food" : item['food']})['supply'])
         if int(foodSupply) < 1:
             print("out of food")
             return {"message": "Out of food item"}, 200
         else:
-            cart.append(menu_collection.find_one({ "food" : item['food']}))
+            # adding this quantity to check whether the product is in cart or no. ifit exist in cart then increment the quantity else add product in cart.
+            if existing_item:
+                cart_item = next((item for item in existing_item['cart'] if item['food'] == item['food']), None)
+                if cart_item:
+                    quantity = cart_item['quantity']
+                    item['quantity'] = quantity +1
+                else:
+                    item['quantity'] = 1
+
+                customer_collection.update_one(
+                    {'email': session['email'], 'cart.food': item['food']},
+                    {'$inc': {'cart.$.quantity': 1}}
+                )                
+            else:
+                item['quantity'] = 1
+                customer_collection.update_one(
+                    {'email': session['email']},
+                    {'$push': {'cart': item}},
+                    upsert=False
+                )   
+            #  commenting the below line because the cart is handled through refreshCart() at line 270
+            # cart.append(menu_collection.find_one({ "food" : item['food']}))
             print(cart)
             print("The food item is added")
             
 
     # add item to user cart
-    customer_collection.update_one(
-        {'email': session['email']},
-        {'$push': {'cart': item}},
-        upsert=False
-    )
+    # customer_collection.update_one(
+    #     {'email': session['email']},
+    #     {'$push': {'cart': item}},
+    #     upsert=False
+    # )
 
     # increment user cart total
     customer_collection.update_one(
@@ -219,9 +266,109 @@ def add_to_cart():
         upsert=False
     )
 
-        #cart.append([])
+    #cart.append([])
+    refreshCart()
     print(f"added {item['food']} to cart for user {session['email']}")
     return {"message": "successfully added item to cart"}, 200
 
+# this method will update the quatity of product updated by user through the cart page
+# it will take prodid = item id and qty= quantity of item
+@app.route('/update', methods=['POST'])
+def updateCart():
+    global cart
+    msg =""
+    try:
+        requestJson = request.get_json()
+        prodId = int(requestJson.get('prodId'))
+        qty = requestJson.get('qty')
+        
+        if "email" in session:
+            # this code will check whether the quantity is under supply or not and update the supply in inventory .
+            itemInMenu = menu_collection.find_one({ '_id' : prodId})
+            if int(itemInMenu['supply']) < int(qty):
+                print("can not add this quantity")
+                
+                msg ="Requested quantity is not available in storage "
+            else:
+                customer_collection.update_one(
+                    {'email': session["email"], 'cart._id': prodId},
+                    {'$set': {'cart.$.quantity': qty}}
+                )
+                msg ="Quantity updated successfully "
+        else:
+            print("email not in session")
+            msg ="email not in session"
+
+        refreshCart()
+
+    except Exception as e:
+        print(f"Error updating cart item: {e}")
+    
+    return msg
+
+# this method will return the total price of cart
+@app.route('/getTotal', methods=['GET'])
+def get_total():
+    global cart
+    cart_total = 0
+    try:
+        for item in cart:
+            price = item.get('price', 0)
+            qty = int(item.get('quantity', 0))
+            cart_total += price * qty
+
+        # customer_collection.update_one(
+        #     {'email': session['email']},
+        #     {'$set': {'cart_total': cart_total}}
+        # )
+        return str(cart_total)
+
+    except Exception as e:
+        print(f"Error calculating cart total: {e}")
+
+# this method will delete the item from cart and database
+# it takes prodId = item id
+@app.route('/delete', methods=['POST'])
+def delete_cart_item():
+    try:
+        requestJson = request.get_json()
+        prodId = int(requestJson.get('prodId'))
+
+        customer_collection.update_one(
+            {"email": session["email"]},
+            {"$pull": {"cart": {"_id": prodId}}}
+        )
+        refreshCart()
+        return redirect('/cart')
+
+    except Exception as e:
+        print(f"Error removing cart item: {e}")
+
+# this method will sync the cart global variable and cart in database
+def refreshCart():
+    global cart
+    cart=[]
+    try:
+        cart_data = customer_collection.find_one(
+            {'email': session['email']}
+        )
+        if cart_data:
+            cart = cart_data['cart']
+        else:
+            # If the customer's cart is not found in the database, initialize it as an empty list
+            cart = []
+    except Exception as e:
+        print(f"Error removing cart item: {e}")
+
+# this method will empty the cart of user when submit button clicked from cart page clicked
+def emptyCart():
+    try:
+        customer_collection.update_one(
+            {'email': session["email"]},
+            {'$set': {'cart': []}}
+        )
+
+    except Exception as e:
+        print(f"Error removing cart item: {e}")
 if __name__ == "__main__":
   app.run(debug=True)
